@@ -1,0 +1,551 @@
+<Window x:Class="SD.Yuzu.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SD.Yuzu"
+        Title="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_Title}" 
+        Width="500" 
+        Height="759"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        ShowInTaskbar="False">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <!-- モダンなComboBoxスタイル -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#D1D1D1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#2C2C2C"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                          Grid.Column="2" 
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          Focusable="False"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="20"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Path x:Name="Arrow"
+                                                      Grid.Column="1"
+                                                      Fill="#666666"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#F8F8F8"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#2196F3"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#F0F0F0"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#1976D2"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#1976D2"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="border" Property="Background" Value="#F5F5F5"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#E0E0E0"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#9E9E9E"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite"
+                                              IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_EditableTextBox"
+                                     Style="{x:Null}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Focusable="True"
+                                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                                     Margin="{TemplateBinding Padding}"
+                                     VerticalAlignment="Center"
+                                     Visibility="Hidden"/>
+                            <Popup x:Name="Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown"
+                                      SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder"
+                                            Background="#FFFFFF"
+                                            BorderBrush="#D1D1D1"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Margin="0,1,0,0">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" Opacity="0.15" BlurRadius="4"/>
+                                        </Border.Effect>
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- モダンなComboBoxItemスタイル -->
+        <Style x:Key="ModernComboBoxItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
+                                <Setter Property="Foreground" Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#9E9E9E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Language Selection -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0"
+                       Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_Language}" 
+                       FontWeight="Bold" 
+                       VerticalAlignment="Center"/>
+                <ComboBox x:Name="LanguageComboBox"
+                          Style="{StaticResource ModernComboBoxStyle}"
+                          SelectedValuePath="Tag"
+                          SelectionChanged="LanguageComboBox_SelectionChanged" Grid.ColumnSpan="2" Margin="41,0,0,1">
+                    <ComboBoxItem Style="{StaticResource ModernComboBoxItemStyle}" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_Language_English}" Tag="en-US"/>
+                    <ComboBoxItem Style="{StaticResource ModernComboBoxItemStyle}" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_Language_Japanese}" Tag="ja-JP"/>
+                </ComboBox>
+            </Grid>
+        </StackPanel>
+
+        <!-- BASE_URL -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <Label Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_EndpointLabel}" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="BaseUrlTextBox" 
+                         Grid.Column="0"
+                         Height="25" 
+                         Text="{Binding BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="12"
+                         Margin="0,0,5,0"/>
+                <Button x:Name="CheckButton"
+                        Grid.Column="1"
+                        Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_CheckButton}" 
+                        Width="60" 
+                        Height="25"
+                        Click="CheckButton_Click"
+                        Background="#2196F3" 
+                        Foreground="White"
+                        FontWeight="Bold"/>
+            </Grid>
+            <!-- Validation Message -->
+            <TextBlock Text="{Binding ValidationMessage}"
+                       Visibility="{Binding IsValidationMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Margin="0,5,0,0"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="#F44336"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsValidationSuccess}" Value="True">
+                                <Setter Property="Foreground" Value="#4CAF50"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- LoRA Directory -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <Label Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_LoraDirectoryLabel}" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="LoraDirectoryTextBox" 
+                         Grid.Column="0"
+                         Height="25" 
+                         Text="{Binding LoraDirectory, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="12"
+                         Margin="0,0,5,0"/>
+                <Button Grid.Column="1" 
+                        Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_BrowseButton}" 
+                        Width="80" 
+                        Height="25"
+                        Click="BrowseLoraDirectory_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Stable Diffusion Directory -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,15">
+            <Label Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_StableDiffusionDirectoryLabel}" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="StableDiffusionDirectoryTextBox" 
+                         Grid.Column="0"
+                         Height="25" 
+                         Text="{Binding StableDiffusionDirectory, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="12"
+                         Margin="0,0,5,0"/>
+                <Button Grid.Column="1" 
+                        Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_BrowseButton}" 
+                        Width="80" 
+                        Height="25"
+                        Click="BrowseStableDiffusionDirectory_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Auto-Complete Tag File -->
+        <StackPanel Grid.Row="4" Margin="0,0,0,15" 
+                    Visibility="{Binding IsAutoCompleteTagFileVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Label Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_AutoCompleteTagFileLabel}" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,5"/>
+            <TextBox x:Name="AutoCompleteTagFileTextBox" 
+                     Height="25" 
+                     Text="{Binding AutoCompleteTagFile, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="12"
+                     TextChanged="AutoCompleteTagFileTextBox_TextChanged">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#D1D1D1"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsAutoCompleteTagFileValid}" Value="False">
+                                <Setter Property="Background" Value="#FFEBEE"/>
+                                <Setter Property="BorderBrush" Value="#F44336"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+        </StackPanel>
+
+        <!-- Batch Settings -->
+        <StackPanel Grid.Row="5" Margin="0,0,0,15">
+
+            <!-- Default Batch Size and Count in one row -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" 
+                       Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_DefaultBatchSize}" 
+                       FontWeight="Bold" 
+                       VerticalAlignment="Center"/>
+                <TextBox x:Name="DefaultBatchSizeTextBox" 
+                         Grid.Column="1"
+                         Height="25" 
+                         Text="{Binding DefaultBatchSize, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="DefaultBatchSizeTextBox_TextChanged"/>
+                <Label Grid.Column="3" 
+                       Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_DefaultBatchCount}" 
+                       FontWeight="Bold" 
+                       VerticalAlignment="Center"/>
+                <TextBox x:Name="DefaultBatchCountTextBox" 
+                         Grid.Column="4"
+                         Height="25" 
+                         Text="{Binding DefaultBatchCount, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="DefaultBatchCountTextBox_TextChanged"/>
+            </Grid>
+
+            <!-- Default Image Limit -->
+            <Grid Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" 
+                       Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_DefaultImageLimit}" 
+                       FontWeight="Bold" 
+                       VerticalAlignment="Center"/>
+                <TextBox x:Name="DefaultImageLimitTextBox" 
+                         Grid.Column="1"
+                         Height="25" 
+                         Text="{Binding DefaultImageLimit, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="DefaultImageLimitTextBox_TextChanged"/>
+            </Grid>
+
+            <!-- Description for Image Limit -->
+
+            <!-- Validation Messages for Batch Settings -->
+            <TextBlock Text="{Binding BatchValidationMessage}"
+                       Visibility="{Binding IsBatchValidationMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Margin="0,10,0,0"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Foreground="#F44336"
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Resolution Presets Settings -->
+        <StackPanel Grid.Row="6" Margin="0,0,0,15">
+            <Label Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_ResolutionPresets}" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,0"/>
+
+            <!-- Header -->
+            <Grid Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Grid.Column="1" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_ResolutionPresetsPortrait}" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Grid.Column="2" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_ResolutionPresetsLandscape}" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Grid.Column="3" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_ResolutionPresetsSquare}" FontWeight="Bold" HorizontalAlignment="Center"/>
+            </Grid>
+
+            <!-- Small Presets Row -->
+            <Grid Margin="0,2,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="S" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox x:Name="SmallPortraitTextBox" 
+                         Grid.Column="1" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding SmallPresets.Portrait, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+                <TextBox x:Name="SmallLandscapeTextBox" 
+                         Grid.Column="2" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding SmallPresets.Landscape, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+                <TextBox x:Name="SmallSquareTextBox" 
+                         Grid.Column="3" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding SmallPresets.Square, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+            </Grid>
+
+            <!-- Medium Presets Row -->
+            <Grid Margin="0,2,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="M" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox x:Name="MediumPortraitTextBox" 
+                         Grid.Column="1" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding MediumPresets.Portrait, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+                <TextBox x:Name="MediumLandscapeTextBox" 
+                         Grid.Column="2" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding MediumPresets.Landscape, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+                <TextBox x:Name="MediumSquareTextBox" 
+                         Grid.Column="3" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding MediumPresets.Square, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+            </Grid>
+
+            <!-- Large Presets Row -->
+            <Grid Margin="0,2,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="L" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox x:Name="LargePortraitTextBox" 
+                         Grid.Column="1" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding LargePresets.Portrait, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+                <TextBox x:Name="LargeLandscapeTextBox" 
+                         Grid.Column="2" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding LargePresets.Landscape, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+                <TextBox x:Name="LargeSquareTextBox" 
+                         Grid.Column="3" 
+                         Height="25" 
+                         Margin="2,0,2,0"
+                         Text="{Binding LargePresets.Square, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="ResolutionPresetTextBox_TextChanged"/>
+            </Grid>
+
+            <!-- Format Description -->
+            <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_ResolutionPresetsFormat}" 
+                       Foreground="Gray" 
+                       FontSize="10" 
+                       Margin="0,5,0,0"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="7" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,10,0,0">
+            <Button x:Name="SaveButton" 
+                    Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_SaveButton}" 
+                    Width="100" 
+                    Height="30" 
+                    Margin="0,0,10,0"
+                    Click="SaveButton_Click"
+                    Background="#4CAF50" 
+                    Foreground="White"
+                    FontWeight="Bold"/>
+            <Button x:Name="CancelButton" 
+                    Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_CancelButton}" 
+                    Width="100" 
+                    Height="30"
+                    Click="CancelButton_Click"
+                    Background="#9E9E9E" 
+                    Foreground="White"
+                    FontWeight="Bold"/>
+        </StackPanel>
+    </Grid>
+</Window> 

@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Settings Window -->
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_Language_English" xml:space="preserve">
+    <value>English (英語)</value>
+  </data>
+  <data name="Settings_Language_Japanese" xml:space="preserve">
+    <value>Japanese (日本語)</value>
+  </data>
+  <data name="Settings_EndpointLabel" xml:space="preserve">
+    <value>Stable Diffusion endpoint (http://127.0.0.1:7860)</value>
+  </data>
+  <data name="Settings_LoraDirectoryLabel" xml:space="preserve">
+    <value>LoRA dir</value>
+  </data>
+  <data name="Settings_StableDiffusionDirectoryLabel" xml:space="preserve">
+    <value>Stable Diffusion dir</value>
+  </data>
+  <data name="Settings_AutoCompleteTagFileLabel" xml:space="preserve">
+    <value>Auto-complete tag file</value>
+  </data>
+  <data name="Settings_CheckButton" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="Settings_CheckingButton" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="Settings_BrowseButton" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="Settings_SaveButton" xml:space="preserve">
+    <value>Save &amp; Close</value>
+  </data>
+  <data name="Settings_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings_ConnectionSuccess" xml:space="preserve">
+    <value>Connection successful! Please restart the application.</value>
+  </data>
+  <data name="Settings_PingFailed" xml:space="preserve">
+    <value>Ping failed. Is WebUI running?</value>
+  </data>
+  <data name="Settings_ApiFailed" xml:space="preserve">
+    <value>API call failed. Please add "--api" to COMMANDLINE_ARGS and restart.</value>
+  </data>
+  <data name="Settings_DirectoryError" xml:space="preserve">
+    <value>Directory Error</value>
+  </data>
+  <data name="Settings_LoraDirectoryNotFound" xml:space="preserve">
+    <value>LoRA directory does not exist:
+{0}</value>
+  </data>
+  <data name="Settings_StableDiffusionDirectoryNotFound" xml:space="preserve">
+    <value>Stable Diffusion WebUI directory does not exist:
+{0}</value>
+  </data>
+  <data name="Settings_ExtensionsNotFound" xml:space="preserve">
+    <value>Extensions folder not found in Stable Diffusion WebUI directory:
+{0}
+
+Please specify the correct Stable Diffusion WebUI root directory.</value>
+  </data>
+  <data name="Settings_SaveError" xml:space="preserve">
+    <value>Failed to save settings: {0}</value>
+  </data>
+  <data name="Settings_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Settings_BrowseLoraDialog" xml:space="preserve">
+    <value>Select LoRA directory</value>
+  </data>
+  <data name="Settings_BrowseStableDiffusionDialog" xml:space="preserve">
+    <value>Select Stable Diffusion directory</value>
+  </data>
+
+  <!-- Main Window -->
+  <data name="MainWindow_Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="MainWindow_RestartTooltip" xml:space="preserve">
+    <value>High memory usage detected. Restart the application</value>
+  </data>
+  <data name="MainWindow_Generating" xml:space="preserve">
+    <value>Generating...</value>
+  </data>
+  <data name="MainWindow_CloseTab" xml:space="preserve">
+    <value>Close tab</value>
+  </data>
+  <data name="MainWindow_DeleteTab" xml:space="preserve">
+    <value>Delete tab</value>
+  </data>
+  <data name="MainWindow_AddTab" xml:space="preserve">
+    <value>Add tab</value>
+  </data>
+  <data name="MainWindow_Interrupt" xml:space="preserve">
+    <value>Interrupt</value>
+  </data>
+  <data name="MainWindow_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="MainWindow_Checkpoint" xml:space="preserve">
+    <value>Checkpoint</value>
+  </data>
+  <data name="MainWindow_RefreshCheckpoints" xml:space="preserve">
+    <value>Refresh checkpoint list</value>
+  </data>
+  <data name="MainWindow_SamplingMethod" xml:space="preserve">
+    <value>Sampling method</value>
+  </data>
+  <data name="MainWindow_ScheduleType" xml:space="preserve">
+    <value>Schedule type</value>
+  </data>
+  <data name="MainWindow_SamplingSteps" xml:space="preserve">
+    <value>Sampling steps</value>
+  </data>
+  <data name="MainWindow_Width" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="MainWindow_Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="MainWindow_DimensionPresets" xml:space="preserve">
+    <value>Resolution presets</value>
+  </data>
+  <data name="MainWindow_Portrait" xml:space="preserve">
+    <value>PT</value>
+  </data>
+  <data name="MainWindow_Landscape" xml:space="preserve">
+    <value>LS</value>
+  </data>
+  <data name="MainWindow_Square" xml:space="preserve">
+    <value>SQ</value>
+  </data>
+  <data name="MainWindow_PortraitM" xml:space="preserve">
+    <value>PT M</value>
+  </data>
+  <data name="MainWindow_LandscapeM" xml:space="preserve">
+    <value>LS M</value>
+  </data>
+  <data name="MainWindow_SquareM" xml:space="preserve">
+    <value>SQ M</value>
+  </data>
+  <data name="MainWindow_PortraitL" xml:space="preserve">
+    <value>PT L</value>
+  </data>
+  <data name="MainWindow_LandscapeL" xml:space="preserve">
+    <value>LS L</value>
+  </data>
+  <data name="MainWindow_SquareL" xml:space="preserve">
+    <value>SQ L</value>
+  </data>
+  <data name="MainWindow_SwapDimensions" xml:space="preserve">
+    <value>Swap width and height</value>
+  </data>
+  <data name="MainWindow_BatchCount" xml:space="preserve">
+    <value>Batch count</value>
+  </data>
+  <data name="MainWindow_BatchSize" xml:space="preserve">
+    <value>Batch size</value>
+  </data>
+  <data name="MainWindow_CFGScale" xml:space="preserve">
+    <value>CFG Scale</value>
+  </data>
+  <data name="MainWindow_Seed" xml:space="preserve">
+    <value>Seed</value>
+  </data>
+  <data name="MainWindow_SeedPlus1" xml:space="preserve">
+    <value>Seed +1</value>
+  </data>
+  <data name="MainWindow_SeedMinus1" xml:space="preserve">
+    <value>Seed -1</value>
+  </data>
+  <data name="MainWindow_SeedPlus1Tooltip" xml:space="preserve">
+    <value>Increment seed by 1</value>
+  </data>
+  <data name="MainWindow_SeedMinus1Tooltip" xml:space="preserve">
+    <value>Decrement seed by 1</value>
+  </data>
+  <data name="MainWindow_RandomSeedTooltip" xml:space="preserve">
+    <value>Generate random seed</value>
+  </data>
+  <data name="MainWindow_RecycleTooltip" xml:space="preserve">
+    <value>Recycle previous generation parameters</value>
+  </data>
+  <data name="MainWindow_CombinatorialGeneration" xml:space="preserve">
+    <value>Combinatorial Generation</value>
+  </data>
+  <data name="MainWindow_CombinatorialGenerationTooltip" xml:space="preserve">
+    <value>Generate all combinations of prompts using nested braces</value>
+  </data>
+  <data name="MainWindow_DynamicPromptNotInstalled" xml:space="preserve">
+    <value>Dynamic prompts is not installed</value>
+  </data>
+  <data name="MainWindow_KohyaHiresFixNotInstalled" xml:space="preserve">
+    <value>Kohya hires.fix integrated isn't installed (it's not forge?)</value>
+  </data>
+  <data name="MainWindow_KohyaHiresFix" xml:space="preserve">
+    <value>Kohya hires.fix</value>
+  </data>
+  <data name="MainWindow_KohyaHiresFixTooltip" xml:space="preserve">
+    <value>Enable Kohya-style high resolution fix method</value>
+  </data>
+  <data name="MainWindow_BlockNumber" xml:space="preserve">
+    <value>Block number</value>
+  </data>
+  <data name="MainWindow_DownscaleFactor" xml:space="preserve">
+    <value>Downscale factor</value>
+  </data>
+  <data name="MainWindow_HiresFix" xml:space="preserve">
+    <value>Hires.fix</value>
+  </data>
+  <data name="MainWindow_Upscaler" xml:space="preserve">
+    <value>Upscaler</value>
+  </data>
+  <data name="MainWindow_HiresSteps" xml:space="preserve">
+    <value>Hires steps</value>
+  </data>
+  <data name="MainWindow_DenoisingStrength" xml:space="preserve">
+    <value>Denoising strength</value>
+  </data>
+  <data name="MainWindow_UpscaleBy" xml:space="preserve">
+    <value>Upscale by</value>
+  </data>
+  <data name="MainWindow_RandomResolution" xml:space="preserve">
+    <value>Random Resolution</value>
+  </data>
+  <data name="MainWindow_ModelType" xml:space="preserve">
+    <value>Model Type</value>
+  </data>
+  <data name="MainWindow_ResolutionWeightMode" xml:space="preserve">
+    <value>Resolution Weight Mode</value>
+  </data>
+  <data name="MainWindow_EqualWeights" xml:space="preserve">
+    <value>Equal Weights</value>
+  </data>
+  <data name="MainWindow_FavorSmaller" xml:space="preserve">
+    <value>Favor Smaller</value>
+  </data>
+  <data name="MainWindow_FavorLarger" xml:space="preserve">
+    <value>Favor Larger</value>
+  </data>
+  <data name="MainWindow_MinimumDimension" xml:space="preserve">
+    <value>Minimum Dimension</value>
+  </data>
+  <data name="MainWindow_MaximumDimension" xml:space="preserve">
+    <value>Maximum Dimension</value>
+  </data>
+  <data name="MainWindow_CurrentResolutions" xml:space="preserve">
+    <value>Current Resolutions</value>
+  </data>
+  <data name="MainWindow_CurrentResolutionsTooltip" xml:space="preserve">
+    <value>List of available resolutions (one per line)</value>
+  </data>
+  <data name="MainWindow_NewWidth" xml:space="preserve">
+    <value>New Width</value>
+  </data>
+  <data name="MainWindow_NewHeight" xml:space="preserve">
+    <value>New Height</value>
+  </data>
+  <data name="MainWindow_AddResolution" xml:space="preserve">
+    <value>Add Resolution</value>
+  </data>
+  <data name="MainWindow_AddResolutionTooltip" xml:space="preserve">
+    <value>Add the specified width and height to the resolution list</value>
+  </data>
+  <data name="MainWindow_Replace" xml:space="preserve">
+    <value>Batch operations</value>
+  </data>
+  <data name="MainWindow_ReplaceTarget" xml:space="preserve">
+    <value>Replace target</value>
+  </data>
+  <data name="MainWindow_ReplaceTargetTooltip" xml:space="preserve">
+    <value>Enter the string you want to replace</value>
+  </data>
+  <data name="MainWindow_ReplaceWith" xml:space="preserve">
+    <value>Replace with</value>
+  </data>
+  <data name="MainWindow_ReplaceWithTooltip" xml:space="preserve">
+    <value>Enter the replacement string (leave empty to delete)</value>
+  </data>
+  <data name="MainWindow_ExecuteReplace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="MainWindow_ExecuteReplaceTooltip" xml:space="preserve">
+    <value>Execute bulk text replacement for all inner tabs</value>
+  </data>
+  <data name="MainWindow_BulkStepsTooltip" xml:space="preserve">
+    <value>Enter new steps value to apply to all inner tabs</value>
+  </data>
+  <data name="MainWindow_ChangeSteps" xml:space="preserve">
+    <value>Change Steps</value>
+  </data>
+  <data name="MainWindow_ChangeStepsTooltip" xml:space="preserve">
+    <value>Apply steps change to all inner tabs</value>
+  </data>
+  <data name="MainWindow_MResolutionize" xml:space="preserve">
+    <value>M size</value>
+  </data>
+  <data name="MainWindow_MResolutionizeTooltip" xml:space="preserve">
+    <value>Scale all inner tabs' resolution to 1.25x and disable Hires.fix</value>
+  </data>
+  <data name="MainWindow_LResolutionize" xml:space="preserve">
+    <value>L size</value>
+  </data>
+  <data name="MainWindow_LResolutionizeTooltip" xml:space="preserve">
+    <value>Scale all inner tabs' resolution to 1.5x and disable Hires.fix</value>
+  </data>
+  <data name="MainWindow_EnableHiresFix" xml:space="preserve">
+    <value>Hires.fix on</value>
+  </data>
+  <data name="MainWindow_EnableHiresFixTooltip" xml:space="preserve">
+    <value>Enable Hires.fix for all inner tabs (max resolution 1500px only)</value>
+  </data>
+  <data name="MainWindow_NormalResolutionize" xml:space="preserve">
+    <value>S size</value>
+  </data>
+  <data name="MainWindow_NormalResolutionizeTooltip" xml:space="preserve">
+    <value>Scale all inner tabs' resolution to 0.8x and disable Hires.fix</value>
+  </data>
+  <data name="MainWindow_RandomSeed" xml:space="preserve">
+    <value>Random Seed</value>
+  </data>
+  <data name="MainWindow_GenerateAll" xml:space="preserve">
+    <value>Generate All</value>
+  </data>
+  <data name="MainWindow_GenerateAllTooltip" xml:space="preserve">
+    <value>Generate images for all inner tabs</value>
+  </data>
+  <data name="MainWindow_GenerateLeft" xml:space="preserve">
+    <value>Generate Left</value>
+  </data>
+  <data name="MainWindow_GenerateLeftTooltip" xml:space="preserve">
+    <value>Generate images for left half of inner tabs</value>
+  </data>
+  <data name="MainWindow_GenerateRight" xml:space="preserve">
+    <value>Generate Right</value>
+  </data>
+  <data name="MainWindow_GenerateRightTooltip" xml:space="preserve">
+    <value>Generate images for right half of inner tabs</value>
+  </data>
+  <data name="MainWindow_OpenSettings" xml:space="preserve">
+    <value>Open Settings</value>
+  </data>
+  <data name="MainWindow_OpenShortcuts" xml:space="preserve">
+    <value>Show keyboard shortcuts list</value>
+  </data>
+  <data name="MainWindow_KeyboardShortcuts" xml:space="preserve">
+    <value>Keyboard Shortcuts</value>
+  </data>
+  <data name="MainWindow_ShortcutsOverlayTitle" xml:space="preserve">
+    <value>Keyboard Shortcuts</value>
+  </data>
+  <data name="MainWindow_BulkImport" xml:space="preserve">
+    <value>Bulk Import</value>
+  </data>
+  <data name="MainWindow_MemoryUsage" xml:space="preserve">
+    <value>High memory usage detected!</value>
+  </data>
+  <data name="MainWindow_AddNewTab" xml:space="preserve">
+    <value>Add new tab</value>
+  </data>
+  <data name="MainWindow_Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="MainWindow_ExportImages" xml:space="preserve">
+    <value>Export Images</value>
+  </data>
+  <data name="MainWindow_DuplicateRight" xml:space="preserve">
+    <value>Duplicate Right</value>
+  </data>
+  <data name="MainWindow_DuplicateLeft" xml:space="preserve">
+    <value>Duplicate Left</value>
+  </data>
+  <data name="MainWindow_PortraitTooltip" xml:space="preserve">
+    <value>Set portrait dimensions</value>
+  </data>
+  <data name="MainWindow_LandscapeTooltip" xml:space="preserve">
+    <value>Set landscape dimensions</value>
+  </data>
+  <data name="MainWindow_SquareTooltip" xml:space="preserve">
+    <value>Set square dimensions</value>
+  </data>
+  <data name="MainWindow_PortraitMTooltip" xml:space="preserve">
+    <value>Set portrait M dimensions</value>
+  </data>
+  <data name="MainWindow_LandscapeMTooltip" xml:space="preserve">
+    <value>Set landscape M dimensions</value>
+  </data>
+  <data name="MainWindow_SquareMTooltip" xml:space="preserve">
+    <value>Set square M dimensions</value>
+  </data>
+  <data name="MainWindow_PortraitLTooltip" xml:space="preserve">
+    <value>Set portrait L dimensions</value>
+  </data>
+  <data name="MainWindow_LandscapeLTooltip" xml:space="preserve">
+    <value>Set landscape L dimensions</value>
+  </data>
+  <data name="MainWindow_SquareLTooltip" xml:space="preserve">
+    <value>Set square L dimensions</value>
+  </data>
+  <data name="MainWindow_SwapDimensionsTooltip" xml:space="preserve">
+    <value>Swap width and height</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="Error_Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Error_Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Error_DynamicPromptsInit" xml:space="preserve">
+    <value>Dynamic Prompts Initialization Error</value>
+  </data>
+  <data name="Error_InterruptFailed" xml:space="preserve">
+    <value>Failed to send interrupt request.
+The server may have stopped.
+
+Error details: {0}</value>
+  </data>
+  <data name="Error_GenerateRequestFailed" xml:space="preserve">
+    <value>An error occurred while adding the generation request.
+
+Error details: {0}</value>
+  </data>
+  <data name="Error_ImageFileNotFound" xml:space="preserve">
+    <value>Image file not found.
+Supported formats: WebP, PNG, JPG, JPEG, BMP, GIF</value>
+  </data>
+  <data name="Error_NoTabSelected" xml:space="preserve">
+    <value>No tab selected.</value>
+  </data>
+  <data name="Error_ImageProcessingFailed" xml:space="preserve">
+    <value>File: {0}
+
+An error occurred while processing the image file: {1}</value>
+  </data>
+  <data name="Error_ImageSetFailed" xml:space="preserve">
+    <value>File: {0}
+
+An error occurred while setting the image: {1}</value>
+  </data>
+  <data name="Error_MetadataParseFailed" xml:space="preserve">
+    <value>An error occurred while parsing metadata: {0}</value>
+  </data>
+  <data name="Error_ImageNotFound" xml:space="preserve">
+    <value>Image not found.</value>
+  </data>
+  <data name="Error_ImageFileNotExists" xml:space="preserve">
+    <value>Image file does not exist: {0}</value>
+  </data>
+  <data name="Error_MetadataNotReadable" xml:space="preserve">
+    <value>Could not read metadata from image.</value>
+  </data>
+  <data name="Error_SeedNotReadable" xml:space="preserve">
+    <value>Could not read seed from image.</value>
+  </data>
+  <data name="Error_RecycleFailed" xml:space="preserve">
+    <value>An error occurred during recycle processing: {0}</value>
+  </data>
+  <data name="Error_NoParentTabSelected" xml:space="preserve">
+    <value>No parent tab selected.</value>
+  </data>
+  <data name="Error_BulkImportFailed" xml:space="preserve">
+    <value>An unexpected error occurred during bulk import processing:
+{0}</value>
+  </data>
+  <data name="Error_NoChildTabsToExecute" xml:space="preserve">
+    <value>No child tabs to execute.</value>
+  </data>
+  <data name="Error_GenerateAllFailed" xml:space="preserve">
+    <value>An error occurred during Generate All processing:
+{0}</value>
+  </data>
+  <data name="Error_NoCurrentTabSelected" xml:space="preserve">
+    <value>Current tab is not selected.</value>
+  </data>
+  <data name="Error_CurrentTabNotFound" xml:space="preserve">
+    <value>Current tab not found.</value>
+  </data>
+  <data name="Error_GenerateLeftFailed" xml:space="preserve">
+    <value>An error occurred during Generate Left processing:
+{0}</value>
+  </data>
+  <data name="Error_GenerateRightFailed" xml:space="preserve">
+    <value>An error occurred during Generate Right processing:
+{0}</value>
+  </data>
+  <data name="Error_NoChildTabsToProcess" xml:space="preserve">
+    <value>No child tabs to process.</value>
+  </data>
+  <data name="Error_LResolutionizeFailed" xml:space="preserve">
+    <value>An error occurred during L resolutionize processing:
+{0}</value>
+  </data>
+  <data name="Error_NoChildTabsToProcessInfo" xml:space="preserve">
+    <value>No child tabs to process.</value>
+  </data>
+  <data name="Error_MResolutionizeFailed" xml:space="preserve">
+    <value>An error occurred during M resolutionize processing:
+{0}</value>
+  </data>
+  <data name="Error_ResolutionAlreadyExists" xml:space="preserve">
+    <value>This resolution already exists.</value>
+  </data>
+  <data name="Error_DuplicateError" xml:space="preserve">
+    <value>Duplicate Error</value>
+  </data>
+  <data name="Error_InvalidDimensions" xml:space="preserve">
+    <value>Please enter valid width and height.</value>
+  </data>
+  <data name="Error_InputError" xml:space="preserve">
+    <value>Input Error</value>
+  </data>
+  <data name="Error_SettingsDialogFailed" xml:space="preserve">
+    <value>Failed to display settings dialog: {0}</value>
+  </data>
+
+  <!-- Success Messages -->
+  <data name="Success_LResolutionizeComplete" xml:space="preserve">
+    <value>L Resolutionize Complete</value>
+  </data>
+  <data name="Success_MResolutionizeComplete" xml:space="preserve">
+    <value>M size</value>
+  </data>
+  <data name="Success_ResolutionAdded" xml:space="preserve">
+    <value>Resolution {0}×{1} has been added.</value>
+  </data>
+  
+  <!-- Settings - Batch Settings -->
+  <data name="Settings_DefaultBatchSize" xml:space="preserve">
+    <value>Default Batch Size</value>
+  </data>
+  <data name="Settings_DefaultBatchCount" xml:space="preserve">
+    <value>Default Batch Count</value>
+  </data>
+  <data name="Settings_BatchSettingsDescription" xml:space="preserve">
+    <value>These values will be used as defaults when creating new tabs</value>
+  </data>
+  <data name="Settings_InvalidBatchSize" xml:space="preserve">
+    <value>Batch size must be a number larger than 0</value>
+  </data>
+  <data name="Settings_InvalidBatchCount" xml:space="preserve">
+    <value>Batch count must be a number between 1 and 100</value>
+  </data>
+  <data name="Settings_DefaultImageLimit" xml:space="preserve">
+    <value>Image display limit</value>
+  </data>
+  <data name="Settings_DefaultImageLimitDescription" xml:space="preserve">
+    <value>Maximum number of images to display per generation</value>
+  </data>
+  <data name="Settings_InvalidImageLimit" xml:space="preserve">
+    <value>Image limit must be a number between 1 and 1000</value>
+  </data>
+
+  <!-- Resolution Presets Settings -->
+  <data name="Settings_ResolutionPresets" xml:space="preserve">
+    <value>Resolution Presets</value>
+  </data>
+  <data name="Settings_ResolutionPresetsPortrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="Settings_ResolutionPresetsLandscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Settings_ResolutionPresetsSquare" xml:space="preserve">
+    <value>Square</value>
+  </data>
+  <data name="Settings_ResolutionPresetsFormat" xml:space="preserve">
+    <value>Format: width,height (e.g. 1024,1360)</value>
+  </data>
+
+  <!-- Generation Time Messages -->
+  <data name="GenerationTime_Label" xml:space="preserve">
+    <value>Generation Time: {0} seconds</value>
+  </data>
+
+  <!-- ショートカット一覧のカテゴリ -->
+  <data name="MainWindow_ShortcutsGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="MainWindow_ShortcutsTabRelated" xml:space="preserve">
+    <value>Tab Related</value>
+  </data>
+  <data name="MainWindow_ShortcutsEditor" xml:space="preserve">
+    <value>Editor</value>
+  </data>
+  <!-- ショートカットの説明文 -->
+  <data name="MainWindow_ShortcutsGenerate" xml:space="preserve">
+    <value>Generate images</value>
+  </data>
+  <data name="MainWindow_ShortcutsNewTab" xml:space="preserve">
+    <value>Open new tab to the right</value>
+  </data>
+  <data name="MainWindow_ShortcutsRestoreTab" xml:space="preserve">
+    <value>Restore last closed tab</value>
+  </data>
+  <data name="MainWindow_ShortcutsDuplicateRight" xml:space="preserve">
+    <value>Duplicate current tab to the right</value>
+  </data>
+  <data name="MainWindow_ShortcutsDuplicateLeft" xml:space="preserve">
+    <value>Duplicate current tab to the left</value>
+  </data>
+  <data name="MainWindow_ShortcutsCloseTab" xml:space="preserve">
+    <value>Close current inner tab</value>
+  </data>
+  <data name="MainWindow_ShortcutsNextTab" xml:space="preserve">
+    <value>Move to next inner tab</value>
+  </data>
+  <data name="MainWindow_ShortcutsPrevTab" xml:space="preserve">
+    <value>Move to previous inner tab</value>
+  </data>
+  <data name="MainWindow_ShortcutsIncreaseWeight" xml:space="preserve">
+    <value>Increase weight of tag at cursor</value>
+  </data>
+  <data name="MainWindow_ShortcutsDecreaseWeight" xml:space="preserve">
+    <value>Decrease weight of tag at cursor</value>
+  </data>
+  <data name="MainWindow_ShortcutsInvertWeight" xml:space="preserve">
+    <value>Invert weight of tag at cursor</value>
+  </data>
+  <data name="MainWindow_ShortcutsDeleteTag" xml:space="preserve">
+    <value>Delete tag at cursor</value>
+  </data>
+  <data name="MainWindow_ShortcutsShowSearch" xml:space="preserve">
+    <value>Show search box</value>
+  </data>
+  <data name="MainWindow_ShortcutsHideSearch" xml:space="preserve">
+    <value>Hide search box</value>
+  </data>
+  <data name="MainWindow_ShortcutsCloseOverlay" xml:space="preserve">
+    <value>Close</value>
+  </data>
+
+  <!-- GroupBox Headers -->
+  <data name="MainWindow_PromptBulkReplace" xml:space="preserve">
+    <value>Prompt Bulk Replace</value>
+  </data>
+  <data name="MainWindow_StepsBulkChange" xml:space="preserve">
+    <value>Steps Bulk Change</value>
+  </data>
+  <data name="MainWindow_SeedBulkChange" xml:space="preserve">
+    <value>Seed Bulk Change</value>
+  </data>
+  <data name="MainWindow_ResolutionBulkChange" xml:space="preserve">
+    <value>Resolution Bulk Change</value>
+  </data>
+  <data name="MainWindow_BulkGeneration" xml:space="preserve">
+    <value>Bulk Generation</value>
+  </data>
+  <data name="MainWindow_BatchOperationDescription" xml:space="preserve">
+    <value>Batch operations will be performed on all child tabs under the current parent tab</value>
+  </data>
+  <data name="MainWindow_ResolutionBulkChangeDescription" xml:space="preserve">
+    <value>Bulk apply presets, keeping aspect ratio</value>
+  </data>
+</root> 

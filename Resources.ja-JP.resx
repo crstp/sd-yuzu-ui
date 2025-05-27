@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Settings Window -->
+  <data name="Settings_Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="Settings_Language_English" xml:space="preserve">
+    <value>English (英語)</value>
+  </data>
+  <data name="Settings_Language_Japanese" xml:space="preserve">
+    <value>Japanese (日本語)</value>
+  </data>
+  <data name="Settings_EndpointLabel" xml:space="preserve">
+    <value>Stable Diffusion エンドポイント (http://127.0.0.1:7860)</value>
+  </data>
+  <data name="Settings_LoraDirectoryLabel" xml:space="preserve">
+    <value>LoRA ディレクトリ</value>
+  </data>
+  <data name="Settings_StableDiffusionDirectoryLabel" xml:space="preserve">
+    <value>Stable Diffusion ディレクトリ</value>
+  </data>
+  <data name="Settings_AutoCompleteTagFileLabel" xml:space="preserve">
+    <value>自動補完タグファイル</value>
+  </data>
+  <data name="Settings_CheckButton" xml:space="preserve">
+    <value>チェック</value>
+  </data>
+  <data name="Settings_CheckingButton" xml:space="preserve">
+    <value>チェック中...</value>
+  </data>
+  <data name="Settings_BrowseButton" xml:space="preserve">
+    <value>参照...</value>
+  </data>
+  <data name="Settings_SaveButton" xml:space="preserve">
+    <value>保存 &amp; 閉じる</value>
+  </data>
+  <data name="Settings_CancelButton" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Settings_ConnectionSuccess" xml:space="preserve">
+    <value>接続成功！アプリを再起動して下さい</value>
+  </data>
+  <data name="Settings_PingFailed" xml:space="preserve">
+    <value>Ping失敗. WebUIは起動していますか？</value>
+  </data>
+  <data name="Settings_ApiFailed" xml:space="preserve">
+    <value>API呼び出し失敗. "--api" をCOMMANDLINE_ARGSに追加して再起動して下さい</value>
+  </data>
+  <data name="Settings_DirectoryError" xml:space="preserve">
+    <value>ディレクトリエラー</value>
+  </data>
+  <data name="Settings_LoraDirectoryNotFound" xml:space="preserve">
+    <value>LoRAディレクトリが存在しません:
+{0}</value>
+  </data>
+  <data name="Settings_StableDiffusionDirectoryNotFound" xml:space="preserve">
+    <value>Stable Diffusion WebUIディレクトリが存在しません:
+{0}</value>
+  </data>
+  <data name="Settings_ExtensionsNotFound" xml:space="preserve">
+    <value>Stable Diffusion WebUIディレクトリ内に'extensions'フォルダが見つかりません:
+{0}
+
+正しいStable Diffusion WebUIのルートディレクトリを指定してください。</value>
+  </data>
+  <data name="Settings_SaveError" xml:space="preserve">
+    <value>設定の保存に失敗しました: {0}</value>
+  </data>
+  <data name="Settings_Error" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="Settings_BrowseLoraDialog" xml:space="preserve">
+    <value>LoRAディレクトリを選択してください</value>
+  </data>
+  <data name="Settings_BrowseStableDiffusionDialog" xml:space="preserve">
+    <value>Stable Diffusionディレクトリを選択してください</value>
+  </data>
+
+  <!-- Main Window -->
+  <data name="MainWindow_Restart" xml:space="preserve">
+    <value>再起動</value>
+  </data>
+  <data name="MainWindow_RestartTooltip" xml:space="preserve">
+    <value>メモリ使用量が多いため、アプリケーションを再起動します</value>
+  </data>
+  <data name="MainWindow_Generating" xml:space="preserve">
+    <value>生成中...</value>
+  </data>
+  <data name="MainWindow_CloseTab" xml:space="preserve">
+    <value>タブを閉じる</value>
+  </data>
+  <data name="MainWindow_DeleteTab" xml:space="preserve">
+    <value>タブを削除</value>
+  </data>
+  <data name="MainWindow_AddTab" xml:space="preserve">
+    <value>タブを追加</value>
+  </data>
+  <data name="MainWindow_Interrupt" xml:space="preserve">
+    <value>Interrupt</value>
+  </data>
+  <data name="MainWindow_Loading" xml:space="preserve">
+    <value>読み込み中...</value>
+  </data>
+  <data name="MainWindow_Checkpoint" xml:space="preserve">
+    <value>モデル</value>
+  </data>
+  <data name="MainWindow_RefreshCheckpoints" xml:space="preserve">
+    <value>モデルリストを更新</value>
+  </data>
+  <data name="MainWindow_SamplingMethod" xml:space="preserve">
+    <value>サンプラー</value>
+  </data>
+  <data name="MainWindow_ScheduleType" xml:space="preserve">
+    <value>スケジューラー</value>
+  </data>
+  <data name="MainWindow_SamplingSteps" xml:space="preserve">
+    <value>ステップ数</value>
+  </data>
+  <data name="MainWindow_Width" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="MainWindow_Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="MainWindow_DimensionPresets" xml:space="preserve">
+    <value>解像度プリセット</value>
+  </data>
+  <data name="MainWindow_Portrait" xml:space="preserve">
+    <value>縦長</value>
+  </data>
+  <data name="MainWindow_Landscape" xml:space="preserve">
+    <value>横長</value>
+  </data>
+  <data name="MainWindow_Square" xml:space="preserve">
+    <value>正方</value>
+  </data>
+  <data name="MainWindow_PortraitM" xml:space="preserve">
+    <value>縦長M</value>
+  </data>
+  <data name="MainWindow_LandscapeM" xml:space="preserve">
+    <value>横長M</value>
+  </data>
+  <data name="MainWindow_SquareM" xml:space="preserve">
+    <value>正方M</value>
+  </data>
+  <data name="MainWindow_PortraitL" xml:space="preserve">
+    <value>縦長L</value>
+  </data>
+  <data name="MainWindow_LandscapeL" xml:space="preserve">
+    <value>横長L</value>
+  </data>
+  <data name="MainWindow_SquareL" xml:space="preserve">
+    <value>正方L</value>
+  </data>
+  <data name="MainWindow_SwapDimensions" xml:space="preserve">
+    <value>幅と高さを入れ替え</value>
+  </data>
+  <data name="MainWindow_BatchCount" xml:space="preserve">
+    <value>Batch count</value>
+  </data>
+  <data name="MainWindow_BatchSize" xml:space="preserve">
+    <value>Batch size</value>
+  </data>
+  <data name="MainWindow_CFGScale" xml:space="preserve">
+    <value>CFG Scale</value>
+  </data>
+  <data name="MainWindow_Seed" xml:space="preserve">
+    <value>Seed</value>
+  </data>
+  <data name="MainWindow_SeedPlus1" xml:space="preserve">
+    <value>Seed +1</value>
+  </data>
+  <data name="MainWindow_SeedMinus1" xml:space="preserve">
+    <value>Seed -1</value>
+  </data>
+  <data name="MainWindow_SeedPlus1Tooltip" xml:space="preserve">
+    <value>Seedを1増加</value>
+  </data>
+  <data name="MainWindow_SeedMinus1Tooltip" xml:space="preserve">
+    <value>Seedを1減少</value>
+  </data>
+  <data name="MainWindow_RandomSeedTooltip" xml:space="preserve">
+    <value>ランダムSeedを生成</value>
+  </data>
+  <data name="MainWindow_RecycleTooltip" xml:space="preserve">
+    <value>直前の生成パラメータを再利用</value>
+  </data>
+  <data name="MainWindow_CombinatorialGeneration" xml:space="preserve">
+    <value>Combinatorial Generation</value>
+  </data>
+  <data name="MainWindow_CombinatorialGenerationTooltip" xml:space="preserve">
+    <value>ネストした括弧を使用してプロンプトの全組み合わせを生成</value>
+  </data>
+  <data name="MainWindow_DynamicPromptNotInstalled" xml:space="preserve">
+    <value>Dynamic promptがインストールされていません</value>
+  </data>
+  <data name="MainWindow_KohyaHiresFixNotInstalled" xml:space="preserve">
+    <value>Kohya hires.fix integratedがインストールされていません(forgeではない?)</value>
+  </data>
+  <data name="MainWindow_KohyaHiresFix" xml:space="preserve">
+    <value>Kohya hires.fix</value>
+  </data>
+  <data name="MainWindow_KohyaHiresFixTooltip" xml:space="preserve">
+    <value>Kohya方式の高解像度補正を有効化</value>
+  </data>
+  <data name="MainWindow_BlockNumber" xml:space="preserve">
+    <value>ブロック番号</value>
+  </data>
+  <data name="MainWindow_DownscaleFactor" xml:space="preserve">
+    <value>ダウンスケール係数</value>
+  </data>
+  <data name="MainWindow_HiresFix" xml:space="preserve">
+    <value>Hires.fix</value>
+  </data>
+  <data name="MainWindow_Upscaler" xml:space="preserve">
+    <value>アップスケーラー</value>
+  </data>
+  <data name="MainWindow_HiresSteps" xml:space="preserve">
+    <value>Hiresステップ数</value>
+  </data>
+  <data name="MainWindow_DenoisingStrength" xml:space="preserve">
+    <value>Denoising Strength</value>
+  </data>
+  <data name="MainWindow_UpscaleBy" xml:space="preserve">
+    <value>アップスケール倍率</value>
+  </data>
+  <data name="MainWindow_RandomResolution" xml:space="preserve">
+    <value>ランダム解像度</value>
+  </data>
+  <data name="MainWindow_ModelType" xml:space="preserve">
+    <value>モデル種別</value>
+  </data>
+  <data name="MainWindow_ResolutionWeightMode" xml:space="preserve">
+    <value>解像度重み設定</value>
+  </data>
+  <data name="MainWindow_EqualWeights" xml:space="preserve">
+    <value>均等重み</value>
+  </data>
+  <data name="MainWindow_FavorSmaller" xml:space="preserve">
+    <value>小さいものを優先</value>
+  </data>
+  <data name="MainWindow_FavorLarger" xml:space="preserve">
+    <value>大きいものを優先</value>
+  </data>
+  <data name="MainWindow_MinimumDimension" xml:space="preserve">
+    <value>最小サイズ</value>
+  </data>
+  <data name="MainWindow_MaximumDimension" xml:space="preserve">
+    <value>最大サイズ</value>
+  </data>
+  <data name="MainWindow_CurrentResolutions" xml:space="preserve">
+    <value>現在の解像度</value>
+  </data>
+  <data name="MainWindow_CurrentResolutionsTooltip" xml:space="preserve">
+    <value>利用可能な解像度のリスト（1行に1つ）</value>
+  </data>
+  <data name="MainWindow_NewWidth" xml:space="preserve">
+    <value>新しい幅</value>
+  </data>
+  <data name="MainWindow_NewHeight" xml:space="preserve">
+    <value>新しい高さ</value>
+  </data>
+  <data name="MainWindow_AddResolution" xml:space="preserve">
+    <value>解像度追加</value>
+  </data>
+  <data name="MainWindow_AddResolutionTooltip" xml:space="preserve">
+    <value>指定した幅と高さを解像度リストに追加</value>
+  </data>
+  <data name="MainWindow_Replace" xml:space="preserve">
+    <value>バッチ操作</value>
+  </data>
+  <data name="MainWindow_ReplaceTarget" xml:space="preserve">
+    <value>置換対象</value>
+  </data>
+  <data name="MainWindow_ReplaceTargetTooltip" xml:space="preserve">
+    <value>置換したい文字列を入力</value>
+  </data>
+  <data name="MainWindow_ReplaceWith" xml:space="preserve">
+    <value>置換後</value>
+  </data>
+  <data name="MainWindow_ReplaceWithTooltip" xml:space="preserve">
+    <value>置換後の文字列を入力（空欄で削除）</value>
+  </data>
+  <data name="MainWindow_ExecuteReplace" xml:space="preserve">
+    <value>置換実行</value>
+  </data>
+  <data name="MainWindow_ExecuteReplaceTooltip" xml:space="preserve">
+    <value>すべての内側タブで一括テキスト置換を実行</value>
+  </data>
+  <data name="MainWindow_BulkStepsTooltip" xml:space="preserve">
+    <value>すべての内側タブに適用する新しいステップ値を入力</value>
+  </data>
+  <data name="MainWindow_ChangeSteps" xml:space="preserve">
+    <value>Steps変更</value>
+  </data>
+  <data name="MainWindow_ChangeStepsTooltip" xml:space="preserve">
+    <value>すべての内側タブにステップ変更を適用</value>
+  </data>
+  <data name="MainWindow_MResolutionize" xml:space="preserve">
+    <value>Mサイズ化</value>
+  </data>
+  <data name="MainWindow_MResolutionizeTooltip" xml:space="preserve">
+    <value>全ての内側タブをMサイズ化</value>
+  </data>
+  <data name="MainWindow_LResolutionize" xml:space="preserve">
+    <value>Lサイズ化</value>
+  </data>
+  <data name="MainWindow_LResolutionizeTooltip" xml:space="preserve">
+    <value>全ての内側タブをLサイズ化</value>
+  </data>
+  <data name="MainWindow_EnableHiresFix" xml:space="preserve">
+    <value>Hires.fix化</value>
+  </data>
+  <data name="MainWindow_EnableHiresFixTooltip" xml:space="preserve">
+    <value>すべての内側タブでHires.fixを有効化</value>
+  </data>
+  <data name="MainWindow_NormalResolutionize" xml:space="preserve">
+    <value>Sサイズ化</value>
+  </data>
+  <data name="MainWindow_NormalResolutionizeTooltip" xml:space="preserve">
+    <value>全ての内側タブをSサイズ化</value>
+  </data>
+  <data name="MainWindow_RandomSeed" xml:space="preserve">
+    <value>ランダムSeed</value>
+  </data>
+  <data name="MainWindow_GenerateAll" xml:space="preserve">
+    <value>全生成</value>
+  </data>
+  <data name="MainWindow_GenerateAllTooltip" xml:space="preserve">
+    <value>すべての内側タブで画像を生成</value>
+  </data>
+  <data name="MainWindow_GenerateLeft" xml:space="preserve">
+    <value>左側生成</value>
+  </data>
+  <data name="MainWindow_GenerateLeftTooltip" xml:space="preserve">
+    <value>内側タブの左半分で画像を生成</value>
+  </data>
+  <data name="MainWindow_GenerateRight" xml:space="preserve">
+    <value>右側生成</value>
+  </data>
+  <data name="MainWindow_GenerateRightTooltip" xml:space="preserve">
+    <value>内側タブの右半分で画像を生成</value>
+  </data>
+  <data name="MainWindow_OpenSettings" xml:space="preserve">
+    <value>設定を開く</value>
+  </data>
+  <data name="MainWindow_OpenShortcuts" xml:space="preserve">
+    <value>キーボードショートカット一覧を表示</value>
+  </data>
+  <data name="MainWindow_KeyboardShortcuts" xml:space="preserve">
+    <value>キーボードショートカット</value>
+  </data>
+  <data name="MainWindow_ShortcutsOverlayTitle" xml:space="preserve">
+    <value>キーボードショートカット一覧</value>
+  </data>
+  <data name="MainWindow_BulkImport" xml:space="preserve">
+    <value>一括インポート</value>
+  </data>
+  <data name="MainWindow_MemoryUsage" xml:space="preserve">
+    <value>メモリ使用量が多すぎます！</value>
+  </data>
+  <data name="MainWindow_AddNewTab" xml:space="preserve">
+    <value>新しいタブを追加</value>
+  </data>
+  <data name="MainWindow_Duplicate" xml:space="preserve">
+    <value>複製</value>
+  </data>
+  <data name="MainWindow_ExportImages" xml:space="preserve">
+    <value>画像エクスポート</value>
+  </data>
+  <data name="MainWindow_DuplicateRight" xml:space="preserve">
+    <value>右に複製</value>
+  </data>
+  <data name="MainWindow_DuplicateLeft" xml:space="preserve">
+    <value>左に複製</value>
+  </data>
+  <data name="MainWindow_PortraitTooltip" xml:space="preserve">
+    <value>縦長寸法を設定</value>
+  </data>
+  <data name="MainWindow_LandscapeTooltip" xml:space="preserve">
+    <value>横長寸法を設定</value>
+  </data>
+  <data name="MainWindow_SquareTooltip" xml:space="preserve">
+    <value>正方形寸法を設定</value>
+  </data>
+  <data name="MainWindow_PortraitMTooltip" xml:space="preserve">
+    <value>縦長M寸法を設定</value>
+  </data>
+  <data name="MainWindow_LandscapeMTooltip" xml:space="preserve">
+    <value>横長M寸法を設定</value>
+  </data>
+  <data name="MainWindow_SquareMTooltip" xml:space="preserve">
+    <value>正方形M寸法を設定</value>
+  </data>
+  <data name="MainWindow_PortraitLTooltip" xml:space="preserve">
+    <value>縦長L寸法を設定</value>
+  </data>
+  <data name="MainWindow_LandscapeLTooltip" xml:space="preserve">
+    <value>横長L寸法を設定</value>
+  </data>
+  <data name="MainWindow_SquareLTooltip" xml:space="preserve">
+    <value>正方形L寸法を設定</value>
+  </data>
+  <data name="MainWindow_SwapDimensionsTooltip" xml:space="preserve">
+    <value>幅と高さを入れ替え</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="Error_Title" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="Error_Information" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="Error_DynamicPromptsInit" xml:space="preserve">
+    <value>Dynamic Prompts 初期化エラー</value>
+  </data>
+  <data name="Error_InterruptFailed" xml:space="preserve">
+    <value>処理の中断要求を送信できませんでした。
+サーバーが停止している可能性があります。
+
+エラー詳細: {0}</value>
+  </data>
+  <data name="Error_GenerateRequestFailed" xml:space="preserve">
+    <value>生成リクエストの追加中にエラーが発生しました。
+
+エラー詳細: {0}</value>
+  </data>
+  <data name="Error_ImageFileNotFound" xml:space="preserve">
+    <value>画像ファイルが見つかりませんでした。
+サポートされている形式: WebP, PNG, JPG, JPEG, BMP, GIF</value>
+  </data>
+  <data name="Error_NoTabSelected" xml:space="preserve">
+    <value>タブが選択されていません。</value>
+  </data>
+  <data name="Error_ImageProcessingFailed" xml:space="preserve">
+    <value>ファイル: {0}
+
+画像ファイルの処理中にエラーが発生しました: {1}</value>
+  </data>
+  <data name="Error_ImageSetFailed" xml:space="preserve">
+    <value>ファイル: {0}
+
+画像のセット中にエラーが発生しました: {1}</value>
+  </data>
+  <data name="Error_MetadataParseFailed" xml:space="preserve">
+    <value>メタデータの解析中にエラーが発生しました: {0}</value>
+  </data>
+  <data name="Error_ImageNotFound" xml:space="preserve">
+    <value>画像が見つかりません。</value>
+  </data>
+  <data name="Error_ImageFileNotExists" xml:space="preserve">
+    <value>画像ファイルが存在しません: {0}</value>
+  </data>
+  <data name="Error_MetadataNotReadable" xml:space="preserve">
+    <value>画像からメタデータを読み取れませんでした。</value>
+  </data>
+  <data name="Error_SeedNotReadable" xml:space="preserve">
+    <value>画像からseedを読み取れませんでした。</value>
+  </data>
+  <data name="Error_RecycleFailed" xml:space="preserve">
+    <value>リサイクル処理中にエラーが発生しました: {0}</value>
+  </data>
+  <data name="Error_NoParentTabSelected" xml:space="preserve">
+    <value>親タブが選択されていません。</value>
+  </data>
+  <data name="Error_BulkImportFailed" xml:space="preserve">
+    <value>Bulk import処理中に予期しないエラーが発生しました:
+{0}</value>
+  </data>
+  <data name="Error_NoChildTabsToExecute" xml:space="preserve">
+    <value>実行する子タブがありません。</value>
+  </data>
+  <data name="Error_GenerateAllFailed" xml:space="preserve">
+    <value>Generate All処理中にエラーが発生しました:
+{0}</value>
+  </data>
+  <data name="Error_NoCurrentTabSelected" xml:space="preserve">
+    <value>現在のタブが選択されていません。</value>
+  </data>
+  <data name="Error_CurrentTabNotFound" xml:space="preserve">
+    <value>現在のタブが見つかりません。</value>
+  </data>
+  <data name="Error_GenerateLeftFailed" xml:space="preserve">
+    <value>Generate Left処理中にエラーが発生しました:
+{0}</value>
+  </data>
+  <data name="Error_GenerateRightFailed" xml:space="preserve">
+    <value>Generate Right処理中にエラーが発生しました:
+{0}</value>
+  </data>
+  <data name="Error_NoChildTabsToProcess" xml:space="preserve">
+    <value>処理する子タブがありません。</value>
+  </data>
+  <data name="Error_LResolutionizeFailed" xml:space="preserve">
+    <value>L解像度化処理中にエラーが発生しました:
+{0}</value>
+  </data>
+  <data name="Error_NoChildTabsToProcessInfo" xml:space="preserve">
+    <value>処理対象の子タブがありません。</value>
+  </data>
+  <data name="Error_MResolutionizeFailed" xml:space="preserve">
+    <value>M解像度化処理中にエラーが発生しました:
+{0}</value>
+  </data>
+  <data name="Error_ResolutionAlreadyExists" xml:space="preserve">
+    <value>この解像度は既に存在します。</value>
+  </data>
+  <data name="Error_DuplicateError" xml:space="preserve">
+    <value>重複エラー</value>
+  </data>
+  <data name="Error_InvalidDimensions" xml:space="preserve">
+    <value>有効な幅と高さを入力してください。</value>
+  </data>
+  <data name="Error_InputError" xml:space="preserve">
+    <value>入力エラー</value>
+  </data>
+  <data name="Error_SettingsDialogFailed" xml:space="preserve">
+    <value>設定ダイアログの表示に失敗しました: {0}</value>
+  </data>
+
+  <!-- Success Messages -->
+  <data name="Success_LResolutionizeComplete" xml:space="preserve">
+    <value>L解像度化完了</value>
+  </data>
+  <data name="Success_MResolutionizeComplete" xml:space="preserve">
+    <value>M解像度化完了</value>
+  </data>
+  <data name="Success_ResolutionAdded" xml:space="preserve">
+    <value>解像度 {0}×{1} が追加されました。</value>
+  </data>
+  
+  <!-- Settings - Batch Settings -->
+  <data name="Settings_DefaultBatchSize" xml:space="preserve">
+    <value>デフォルト Batch Size</value>
+  </data>
+  <data name="Settings_DefaultBatchCount" xml:space="preserve">
+    <value>デフォルト Batch Count</value>
+  </data>
+  <data name="Settings_BatchSettingsDescription" xml:space="preserve">
+    <value>これらの値は新しいタブ作成時のデフォルト値として使用されます</value>
+  </data>
+  <data name="Settings_InvalidBatchSize" xml:space="preserve">
+    <value>Batch sizeは1以上の数値である必要があります</value>
+  </data>
+  <data name="Settings_InvalidBatchCount" xml:space="preserve">
+    <value>バッチ数は1から100の間の数値である必要があります</value>
+  </data>
+  <data name="Settings_DefaultImageLimit" xml:space="preserve">
+    <value>画像表示最大数</value>
+  </data>
+  <data name="Settings_DefaultImageLimitDescription" xml:space="preserve">
+    <value>生成あたりの最大表示画像数</value>
+  </data>
+  <data name="Settings_InvalidImageLimit" xml:space="preserve">
+    <value>画像制限数は1から1000の間の数値である必要があります</value>
+  </data>
+
+  <!-- Resolution Presets Settings -->
+  <data name="Settings_ResolutionPresets" xml:space="preserve">
+    <value>解像度プリセット設定</value>
+  </data>
+  <data name="Settings_ResolutionPresetsPortrait" xml:space="preserve">
+    <value>縦長</value>
+  </data>
+  <data name="Settings_ResolutionPresetsLandscape" xml:space="preserve">
+    <value>横長</value>
+  </data>
+  <data name="Settings_ResolutionPresetsSquare" xml:space="preserve">
+    <value>正方</value>
+  </data>
+  <data name="Settings_ResolutionPresetsFormat" xml:space="preserve">
+    <value>形式: 幅,高さ (例: 1024,1360)</value>
+  </data>
+
+  <!-- Generation Time Messages -->
+  <data name="GenerationTime_Label" xml:space="preserve">
+    <value>生成時間: {0} 秒</value>
+  </data>
+
+  <!-- ショートカット一覧のカテゴリ -->
+  <data name="MainWindow_ShortcutsGeneral" xml:space="preserve">
+    <value>全般</value>
+  </data>
+  <data name="MainWindow_ShortcutsTabRelated" xml:space="preserve">
+    <value>タブ関連</value>
+  </data>
+  <data name="MainWindow_ShortcutsEditor" xml:space="preserve">
+    <value>エディタ関連</value>
+  </data>
+  <!-- ショートカットの説明文 -->
+  <data name="MainWindow_ShortcutsGenerate" xml:space="preserve">
+    <value>画像生成</value>
+  </data>
+  <data name="MainWindow_ShortcutsNewTab" xml:space="preserve">
+    <value>新しいタブを右側に開く</value>
+  </data>
+  <data name="MainWindow_ShortcutsRestoreTab" xml:space="preserve">
+    <value>最後に閉じたタブを復元</value>
+  </data>
+  <data name="MainWindow_ShortcutsDuplicateRight" xml:space="preserve">
+    <value>現在のタブの設定を右側に複製</value>
+  </data>
+  <data name="MainWindow_ShortcutsDuplicateLeft" xml:space="preserve">
+    <value>現在のタブの設定を左側に複製</value>
+  </data>
+  <data name="MainWindow_ShortcutsCloseTab" xml:space="preserve">
+    <value>現在の内側タブを閉じる</value>
+  </data>
+  <data name="MainWindow_ShortcutsNextTab" xml:space="preserve">
+    <value>次の内側タブに移動</value>
+  </data>
+  <data name="MainWindow_ShortcutsPrevTab" xml:space="preserve">
+    <value>前の内側タブに移動</value>
+  </data>
+  <data name="MainWindow_ShortcutsIncreaseWeight" xml:space="preserve">
+    <value>カーソル位置のタグの重みを増加</value>
+  </data>
+  <data name="MainWindow_ShortcutsDecreaseWeight" xml:space="preserve">
+    <value>カーソル位置のタグの重みを減少</value>
+  </data>
+  <data name="MainWindow_ShortcutsInvertWeight" xml:space="preserve">
+    <value>カーソル位置のタグの重みを反転</value>
+  </data>
+  <data name="MainWindow_ShortcutsDeleteTag" xml:space="preserve">
+    <value>カーソル位置のタグを削除</value>
+  </data>
+  <data name="MainWindow_ShortcutsShowSearch" xml:space="preserve">
+    <value>検索ボックスを表示</value>
+  </data>
+  <data name="MainWindow_ShortcutsHideSearch" xml:space="preserve">
+    <value>検索ボックスを非表示</value>
+  </data>
+  <data name="MainWindow_ShortcutsCloseOverlay" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+
+  <!-- GroupBox Headers -->
+  <data name="MainWindow_PromptBulkReplace" xml:space="preserve">
+    <value>プロンプト一括置換</value>
+  </data>
+  <data name="MainWindow_StepsBulkChange" xml:space="preserve">
+    <value>Steps一括変更</value>
+  </data>
+  <data name="MainWindow_SeedBulkChange" xml:space="preserve">
+    <value>Seed一括変更</value>
+  </data>
+  <data name="MainWindow_ResolutionBulkChange" xml:space="preserve">
+    <value>解像度一括変更</value>
+  </data>
+  <data name="MainWindow_BulkGeneration" xml:space="preserve">
+    <value>一括生成</value>
+  </data>
+  <data name="MainWindow_BatchOperationDescription" xml:space="preserve">
+    <value>現在の親タブの下にある全ての子タブにバッチ操作を行います</value>
+  </data>
+  <data name="MainWindow_ResolutionBulkChangeDescription" xml:space="preserve">
+    <value>アスペクト比を維持してプリセットに近い解像度に一括変更</value>
+  </data>
+</root> 
