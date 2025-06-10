@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SD.Yuzu"
         mc:Ignorable="d"
         Title="SD-Yuzu" Height="700" Width="1200" MinHeight="500" MinWidth="800"
-        Icon="icon.ico"
+        Icon="pack://application:,,,/Resources/yuzu_.ico"
         KeyDown="MainWindow_KeyDown"
         PreviewKeyDown="MainWindow_PreviewKeyDown"
         AllowDrop="True"
@@ -19,11 +19,17 @@
     <Window.InputBindings>
         <KeyBinding Key="A" Modifiers="Alt" Command="{Binding Path=DataContext.MoveToPreviousInnerTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
         <KeyBinding Key="D" Modifiers="Alt" Command="{Binding Path=DataContext.MoveToNextInnerTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        <KeyBinding Key="A" Modifiers="Alt+Shift" Command="{Binding Path=DataContext.MoveToPreviousOuterTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        <KeyBinding Key="D" Modifiers="Alt+Shift" Command="{Binding Path=DataContext.MoveToNextOuterTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        <KeyBinding Key="A" Modifiers="Alt+Ctrl" Command="{Binding Path=DataContext.MoveToPreviousOuterTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        <KeyBinding Key="D" Modifiers="Alt+Ctrl" Command="{Binding Path=DataContext.MoveToNextOuterTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
     </Window.InputBindings>
     <Window.Resources>
+        <local:OptimizedImageConverter x:Key="OptimizedImageConverter"/>
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <local:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+
         
         <!-- 細いスクロールバーのスタイル -->
         <Style x:Key="ThinScrollBarStyle" TargetType="ScrollBar">
@@ -144,6 +150,33 @@
                             <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Style="{StaticResource ThinScrollBarStyle}"/>
                             <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Style="{StaticResource ThinScrollBarStyle}"/>
                         </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 細いスクロールバー用のListBoxスタイル -->
+        <Style x:Key="ThinScrollBarListBoxStyle" TargetType="ListBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Style="{StaticResource ThinScrollViewerStyle}">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsGrouping" Value="true"/>
+                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -331,6 +364,103 @@
                     ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RestartTooltip}"/>
         </StackPanel>
         
+        <!-- バージョンチェックパネル（右上、メモリモニターの下） -->
+        <StackPanel x:Name="VersionCheckPanel" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Margin="10,10,10,10"
+                    Visibility="Collapsed"
+                    Panel.ZIndex="1000">
+            <!-- 統合されたボタンコントロール -->
+            <Border Background="LightBlue"
+                    BorderBrush="Blue"
+                    BorderThickness="2"
+                    CornerRadius="4">
+                <StackPanel Orientation="Horizontal" 
+                           Margin="0">
+                    <!-- メインのバージョンボタン -->
+                    <Button x:Name="NewVersionButton"
+                            Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_NewVersionAvailable}"
+                            Background="Transparent"
+                            Foreground="DarkBlue"
+                            FontWeight="Bold"
+                            Padding="10,5,5,5"
+                            BorderThickness="0"
+                            Click="NewVersionButton_Click"
+                            ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_NewVersionTooltip}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#E0F0FF"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#C0E0FF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <!-- 区切り線 -->
+                    <Rectangle Width="1" 
+                              Fill="Blue" 
+                              Margin="0,3,0,3"/>
+                    
+                    <!-- 閉じるボタン -->
+                    <Button x:Name="CloseVersionButton"
+                            Width="20"
+                            Height="20"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            Margin="0"
+                            Click="CloseVersionButton_Click"
+                            ToolTip="閉じる">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="0,2,2,0">
+                                                <Path x:Name="ClosePath"
+                                                      Data="M3,3 L13,13 M13,3 L3,13" 
+                                                      Stroke="DarkBlue" 
+                                                      StrokeThickness="1.5"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#FFE0E0"/>
+                                                    <Setter TargetName="ClosePath" Property="Stroke" Value="Red"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#FFC0C0"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        
         <TabControl x:Name="MainTabControl" ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}" AllowDrop="True" PreviewMouseMove="TabControl_PreviewMouseMove" DragOver="TabControl_DragOver" Drop="TabControl_Drop"
                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabControl.Resources>
@@ -376,7 +506,7 @@
                     <Setter Property="HeaderTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,0"
+                                <StackPanel Orientation="Horizontal" Margin="2,0,0,0"
                                             PreviewMouseLeftButtonDown="OuterTabHeader_PreviewMouseLeftButtonDown">
                                     <!-- コンテキストメニューを追加 -->
                                     <StackPanel.ContextMenu>
@@ -388,7 +518,7 @@
                                     <!-- 通常表示用のTextBlock -->
                                     <TextBlock x:Name="TitleTextBlock" 
                                                Text="{Binding Title}" 
-                                               MinWidth="60" 
+                                               MinWidth="30" 
                                                VerticalAlignment="Center"
                                                FontSize="13"
                                                FontWeight="Medium"
@@ -397,7 +527,7 @@
                                     <!-- 編集用のTextBox（初期状態では非表示） -->
                                     <TextBox x:Name="TitleTextBox" 
                                              Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
-                                             MinWidth="60" 
+                                             MinWidth="30" 
                                              VerticalAlignment="Center"
                                              FontSize="13"
                                              Visibility="Collapsed"
@@ -406,7 +536,7 @@
                                     <!-- モダンな閉じるボタン -->
                                     <Button Command="{Binding DataContext.RemoveTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
                                             CommandParameter="{Binding}" 
-                                            Margin="8,0,0,0" 
+                                            Margin="5,0,0,0" 
                                             Width="18" 
                                             Height="18"
                                             Background="Transparent"
@@ -473,7 +603,7 @@
                                                         CornerRadius="6,6,0,0" 
                                                         Margin="0,1,1,0" 
                                                         Padding="8,6,6,6"
-                                                        MinWidth="30">
+                                                        MinWidth="20">
                                                     <ContentPresenter x:Name="ContentSite"
                                                                       VerticalAlignment="Center"
                                                                       HorizontalAlignment="Left"
@@ -540,7 +670,7 @@
                                                     <Button PreviewMouseLeftButtonDown="RemoveInnerTabButton_Click"
                                                             ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_DeleteTab}"
                                                             Panel.ZIndex="1"
-                                                            Margin="6,0,0,0" 
+                                                            Margin="4,0,0,0" 
                                                             Width="16" 
                                                             Height="16"
                                                             Background="Transparent"
@@ -586,11 +716,10 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,4" Grid.Row="0">
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,4" Grid.Row="0">
                                             <TabPanel x:Name="HeaderPanel" Panel.ZIndex="1" IsItemsHost="True" />
                                             <!-- モダンな追加ボタン -->
                                             <Button Click="AddInnerTabButton_Click"
-                                                    ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_AddTab}"
                                                     DataContext="{Binding}"
                                                     Width="26" 
                                                     Height="22" 
@@ -639,7 +768,7 @@
                                         </Grid.RowDefinitions>
                                         
                                         <!-- プロンプト入力エリア（上部） -->
-                                        <Grid Grid.Row="0" Margin="10">
+                                        <Grid Grid.Row="0" Margin="10,0,10,0">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
@@ -647,7 +776,7 @@
                                                                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                 <local:AutoCompleteTextBox x:Name="PromptTextBox"
                                                           Text="{Binding TextBoxValue, UpdateSourceTrigger=PropertyChanged}"
-                                                          FontSize="12" Margin="0,0,0,10"/>
+                                                          FontSize="12" Margin="0,0,0,5"/>
                                 <local:AutoCompleteTextBox x:Name="NegativePromptTextBox"
                                                           Text="{Binding NegativePromptValue, UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="12"/>
@@ -657,7 +786,7 @@
                                                 <Button x:Name="GenerateButton" 
                                                         Content="{Binding GenerateButtonText}"
                                                         Command="{Binding DataContext.GenerateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                        Width="100" Height="{Binding ElementName=PromptTextBox, Path=ActualHeight}" VerticalAlignment="Top" Margin="0,0,0,10"
+                                                        Width="100" Height="{Binding ElementName=PromptTextBox, Path=ActualHeight}" VerticalAlignment="Top" Margin="0,0,0,5"
                                                         FontSize="14" FontWeight="Bold"
                                                         Background="{Binding IsGenerating, Converter={StaticResource BooleanToColorConverter}}" Foreground="White"/>
                                                 <Button x:Name="InterruptButton"
@@ -670,7 +799,7 @@
                                         </Grid>
                                         
                                         <!-- メインコンテンツエリア -->
-                                        <Grid Grid.Row="1">
+                                        <Grid Grid.Row="1" Margin="0,4,0,0">
                                             <!-- ローディング表示 -->
                                             <Grid Visibility="{Binding IsContentReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                                                   Background="White" Panel.ZIndex="1000">
@@ -687,10 +816,25 @@
                                                 </Grid.ColumnDefinitions>
                                                 
                                                 <!-- 左側設定パネル -->
-                                                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="10,0,0,10" Style="{StaticResource ThinScrollViewerStyle}">
+                                                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="10,0,1,10" Style="{StaticResource ThinScrollViewerStyle}">
                                                     <StackPanel>
-                                                        <!-- Progress Bar -->
-                                                        <StackPanel Visibility="{Binding IsGenerating, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,15">
+                                                        <!-- Progress Bar (一時的に非表示) -->
+                                                        <StackPanel Margin="0,0,0,15" Visibility="Collapsed">
+                                                            <!-- 左パネルのプログレスバーを一時的に非表示にしてテスト -->
+                                                            <!--<StackPanel.Style>
+                                                                <Style TargetType="StackPanel">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <MultiDataTrigger>
+                                                                            <MultiDataTrigger.Conditions>
+                                                                                <Condition Binding="{Binding IsGenerating}" Value="True"/>
+                                                                                <Condition Binding="{Binding Path=IsLeftPanelVisible, RelativeSource={RelativeSource AncestorType=Window}}" Value="True"/>
+                                                                            </MultiDataTrigger.Conditions>
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </MultiDataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </StackPanel.Style>-->
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="*"/>
@@ -703,7 +847,7 @@
                                                         </StackPanel>
                                                         
                                                         <!-- Checkpoint -->
-                                                        <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Checkpoint}" FontWeight="Bold" Margin="0,0,0,5"/>
+                                                        <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Checkpoint}" FontWeight="Bold" Margin="0,5,0,5"/>
                                                         <Grid Margin="0,0,0,10">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*"/>
@@ -1213,7 +1357,7 @@
                                                         </Grid>
                                                         
                                                         <!-- Kohya hires.fix settings (visible when enabled) -->
-                                                        <StackPanel Visibility="{Binding EnableKohyaHiresFix, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="20,0,0,10">
+                                                        <StackPanel Visibility="{Binding EnableKohyaHiresFix, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="20,5,0,10">
                                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,5" HorizontalAlignment="Right">
                                                                 <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_BlockNumber}" FontWeight="Bold" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                                                 <TextBox Text="{Binding KohyaBlockNumber, UpdateSourceTrigger=PropertyChanged}" 
@@ -1231,6 +1375,22 @@
                                                                         </Binding>
                                                                     </TextBox.Text>
                                                                 </TextBox>
+                                                            </StackPanel>
+                                                            
+                                                            <!-- Kohya Always Enable Condition -->
+                                                            <CheckBox Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_KohyaAlwaysEnableCondition}" 
+                                                                      IsChecked="{Binding KohyaAlwaysEnableCondition}" 
+                                                                      FontWeight="Normal" 
+                                                                      Margin="0,0,0,5"/>
+                                                            
+                                                            <!-- Kohya Condition Settings (always visible) -->
+                                                            <StackPanel Visibility="Visible" Margin="0,0,0,5">
+                                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5" HorizontalAlignment="Right">
+                                                                    <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_KohyaConditionShortSide}" FontWeight="Bold" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                                    <TextBox Width="50" Height="20" FontSize="12" VerticalAlignment="Center" Text="{Binding KohyaConditionShortSideText, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                    <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_KohyaConditionLongSide}" FontWeight="Bold" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                                                                    <TextBox Width="50" Height="20" FontSize="12" VerticalAlignment="Center" Text="{Binding KohyaConditionLongSideText, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                </StackPanel>
                                                             </StackPanel>
                                                         </StackPanel>
 
@@ -1258,10 +1418,29 @@
                                                         </Grid>
 
                                                         <!-- Random Resolution -->
-                                                        <CheckBox Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RandomResolution}" IsChecked="{Binding EnableRandomResolution}" FontWeight="Bold" Margin="0,0,0,10"/>
+                                                        <Grid Margin="0,0,0,10">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            
+                                                            <CheckBox Grid.Column="0" 
+                                                                      Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RandomResolution}" 
+                                                                      IsChecked="{Binding EnableRandomResolution}" 
+                                                                      IsEnabled="{Binding Path=DataContext.IsRandomResolutionAvailable, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                      FontWeight="Bold"/>
+                                                            
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RandomResolutionNotInstalled}"
+                                                                       Visibility="{Binding Path=DataContext.IsRandomResolutionAvailable, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                                                       Foreground="#999999"
+                                                                       FontSize="12"
+                                                                       Margin="10,0,0,0"
+                                                                       VerticalAlignment="Center"/>
+                                                        </Grid>
                                                         
                                                         <!-- Random Resolution settings (visible when enabled) -->
-                                                        <StackPanel Visibility="{Binding EnableRandomResolution, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="20,0,0,10">
+                                                        <StackPanel Visibility="{Binding EnableRandomResolution, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="20,5,0,10">
                                                             <!-- Model Type -->
                                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                                                                 <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ModelType}" FontWeight="Bold" Margin="0,0,10,0" VerticalAlignment="Center"/>
@@ -1274,6 +1453,7 @@
                                                                 <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ResolutionWeightMode}" FontWeight="Bold" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                                <RadioButton Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_EqualWeights}" IsChecked="{Binding Path=DataContext.IsRandomResolutionWeightModeEqual, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,0,10,0"/>
                                                                 <RadioButton Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_FavorSmaller}" IsChecked="{Binding Path=DataContext.IsRandomResolutionWeightModeSmaller, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,0,10,0"/>
                                                                 <RadioButton Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_FavorLarger}" IsChecked="{Binding Path=DataContext.IsRandomResolutionWeightModeLarger, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,0,0,0"/>
                                                             </StackPanel>
@@ -1285,7 +1465,7 @@
                                                                     <ColumnDefinition Width="70"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_MinimumDimension}" FontWeight="Bold" Margin="0,0,0,5" Grid.ColumnSpan="2"/>
-                                                                <Slider Grid.Column="0" Minimum="512" Maximum="1216" Value="{Binding Path=DataContext.RandomResolutionMinDim, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" 
+                                                                <Slider Grid.Column="0" Minimum="512" Maximum="4096" Value="{Binding Path=DataContext.RandomResolutionMinDim, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" 
                                                                         IsSnapToTickEnabled="True" TickFrequency="64" Margin="0,20,5,0"/>
                                                                 <TextBox Grid.Column="1" Text="{Binding Path=DataContext.RandomResolutionMinDim, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" 
                                                                          VerticalAlignment="Top" Margin="0,20,0,0" Height="20" FontSize="12"/>
@@ -1298,7 +1478,7 @@
                                                                     <ColumnDefinition Width="70"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_MaximumDimension}" FontWeight="Bold" Margin="0,0,0,5" Grid.ColumnSpan="2"/>
-                                                                <Slider Grid.Column="0" Minimum="832" Maximum="1344" Value="{Binding Path=DataContext.RandomResolutionMaxDim, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" 
+                                                                <Slider Grid.Column="0" Minimum="512" Maximum="4096" Value="{Binding Path=DataContext.RandomResolutionMaxDim, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" 
                                                                         IsSnapToTickEnabled="True" TickFrequency="64" Margin="0,20,5,0"/>
                                                                 <TextBox Grid.Column="1" Text="{Binding Path=DataContext.RandomResolutionMaxDim, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" 
                                                                          VerticalAlignment="Top" Margin="0,20,0,0" Height="20" FontSize="12"/>
@@ -1460,7 +1640,7 @@
                                                                     <!-- Generate Left ボタン -->
                                                                     <Button Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_GenerateLeft}" 
                                                                         Click="GenerateLeftButton_Click"
-                                                                        Width="100" Height="25" 
+                                                                        Width="90" Height="25" 
                                                                         Margin="0,0,5,0"
                                                                         FontSize="12" FontWeight="Bold"
                                                                         Background="#007BFF" Foreground="White"
@@ -1469,7 +1649,7 @@
                                                                     <!-- Generate All ボタン -->
                                                                     <Button Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_GenerateAll}" 
                                                                         Click="GenerateAllButton_Click"
-                                                                        Width="100" Height="25" 
+                                                                        Width="90" Height="25" 
                                                                         Margin="0,0,5,0"
                                                                         HorizontalAlignment="Left"
                                                                         FontSize="12" FontWeight="Bold"
@@ -1479,7 +1659,7 @@
                                                                     <!-- Generate Right ボタン -->
                                                                     <Button Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_GenerateRight}" 
                                                                         Click="GenerateRightButton_Click"
-                                                                        Width="100" Height="25" 
+                                                                        Width="90" Height="25" 
                                                                         Margin="0,0,0,0"
                                                                         FontSize="12" FontWeight="Bold"
                                                                         Background="#28A745" Foreground="White"
@@ -1491,7 +1671,8 @@
                                                         <!-- 設定・ショートカットボタン -->
                                                         <StackPanel Orientation="Horizontal" 
                                                                     HorizontalAlignment="Right" 
-                                                                    Margin="0,10,0,10">
+                                                                    Margin="0,10,0,5">
+
                                                             <!-- ショートカットボタン -->
                                                             <Button Content="⌨" 
                                                                     Click="ShortcutsButton_Click"
@@ -1511,6 +1692,35 @@
                                                                     ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_OpenSettings}"/>
                                                         </StackPanel>
                                                         
+                                                        <!-- パネル折り畳みボタン（別行） -->
+                                                        <StackPanel Orientation="Horizontal" 
+                                                                    HorizontalAlignment="Right" 
+                                                                    Margin="0,5,0,10">
+
+                                                            <Button Click="ToggleLeftPanelButton_Click"
+                                                                    Width="80" Height="35" 
+                                                                    Margin="0,0,5,0"
+                                                                    FontSize="10" FontWeight="Bold"
+                                                                    Background="#2196F3" Foreground="White"
+                                                                    ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ToggleLeftPanelTooltip}">
+                                                                <Button.Content>
+                                                                    <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ToggleLeftPanel}"
+                                                                               TextAlignment="Center"
+                                                                               LineHeight="12"
+                                                                               TextWrapping="Wrap"/>
+                                                                </Button.Content>
+                                                            </Button>
+                                                            <!-- 画像全画面表示ボタン -->
+                                                            <Button Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ImageFullscreen}"
+                                                                Click="ImageFullscreenButton_Click"
+                                                                Width="80" Height="35" 
+                                                                Margin="0,0,0,0"
+                                                                FontSize="10" FontWeight="Bold"
+                                                                Background="#2196F3" Foreground="White"
+                                                                ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ImageFullscreenTooltip}"/>
+
+                                                        </StackPanel>
+                                                        
                                                         <!-- 処理時間表示 -->
                                                         <TextBlock Text="{Binding ProcessingTime}" 
                                                                    FontWeight="Bold" 
@@ -1520,21 +1730,72 @@
                                                 </ScrollViewer>
                                                 
                                                 <!-- Splitter -->
-                                                <GridSplitter x:Name="MainSplitter" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" 
+                                                <GridSplitter x:Name="MainSplitter" Grid.Column="1" Width="3" HorizontalAlignment="Stretch" 
                                                               Background="#DDDDDD" ShowsPreview="True" ResizeBehavior="PreviousAndNext"
                                                               DragCompleted="MainSplitter_DragCompleted"/>
                                                 
                                                 <!-- 右側画像表示 -->
-                                                <Grid Grid.Column="2" Margin="5,0,10,10">
+                                                <Grid Grid.Column="2" Margin="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    
+                                                    <!-- プログレスバー（常時表示・テスト用） -->
+                                                    <StackPanel Grid.Row="0" 
+                                                                Visibility="{Binding Path=IsGenerating, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                                                Margin="5,3,5,3" 
+                                                                Background="White"
+                                                                Effect="{x:Null}">
+                                                        <Border Background="White" 
+                                                                BorderBrush="#E0E0E0" 
+                                                                BorderThickness="1" 
+                                                                CornerRadius="6" 
+                                                                Padding="15,10">
+                                                            <StackPanel>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*"/>
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <ProgressBar Grid.Column="0" 
+                                                                                 Value="{Binding ProgressValue}" 
+                                                                                 Maximum="1" 
+                                                                                 Height="22" 
+                                                                                 Margin="0"
+                                                                                 Background="#F0F0F0"
+                                                                                 Foreground="#a0c6f2"
+                                                                                 BorderThickness="1"
+                                                                                 BorderBrush="#D0D0D0"/>
+                                                                    <TextBlock Grid.Column="1" 
+                                                                               Text="{Binding EtaText}" 
+                                                                               VerticalAlignment="Center" 
+                                                                               FontSize="14" 
+                                                                               FontWeight="Bold"
+                                                                               Foreground="#000"
+                                                                               Margin="5,0,0,0"/>
+                                                                    <TextBlock Text="{Binding ProgressValue, StringFormat=P1}" 
+                                                                               HorizontalAlignment="Center" 
+                                                                               FontSize="14" 
+                                                                               FontWeight="Medium"
+                                                                               Margin="5,0,0,0"
+                                                                               Foreground="#000"/>
+                                                                </Grid>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    
                                                     <!-- 通常表示（4列グリッド） -->
-                                                    <ListBox ItemsSource="{Binding ImagePaths}"
+                                                    <ListBox Grid.Row="1"
+                                                             ItemsSource="{Binding ImagePaths}"
                                                              BorderThickness="0"
                                                              Background="Transparent"
                                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
                                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                              ScrollViewer.CanContentScroll="False"
                                                              Visibility="{Binding IsImageExpanded, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                                                             MouseLeftButtonDown="ListBox_MouseLeftButtonDown">
+                                                             MouseLeftButtonDown="ListBox_MouseLeftButtonDown"
+                                                             Style="{StaticResource ThinScrollBarListBoxStyle}">
                                                         <!-- ホバー＆選択ハイライトを無効化 -->
                                                         <ListBox.ItemContainerStyle>
                                                             <Style TargetType="ListBoxItem">
@@ -1551,14 +1812,14 @@
                                                                 </Setter>
                                                             </Style>
                                                         </ListBox.ItemContainerStyle>
-                                                        <ListBox.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <UniformGrid Columns="4" VerticalAlignment="Top"/>
-                                                            </ItemsPanelTemplate>
-                                                        </ListBox.ItemsPanel>
+                                                                            <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ImageGridColumns}" VerticalAlignment="Top"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
                                                         <ListBox.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Border Margin="2" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="1" CornerRadius="3">
+                                                                <Border Margin="2,0,2,2" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="1" CornerRadius="3">
                                                                     <Image Stretch="Uniform" Margin="2"
                                                                            RenderOptions.EdgeMode="Aliased"
                                                                            RenderOptions.BitmapScalingMode="HighQuality"
@@ -1571,7 +1832,8 @@
                                                     </ListBox>
                                                     
                                                     <!-- 拡大表示（1枚のみ） -->
-                                                    <Grid Visibility="{Binding IsImageExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                    <Grid Grid.Row="1"
+                                                          Visibility="{Binding IsImageExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                           MouseLeftButtonDown="ExpandedImageBackground_MouseLeftButtonDown"
                                                           Background="Transparent">
                                                         
@@ -1607,7 +1869,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal" Margin="0,6,0,6" Grid.Row="0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,3" Grid.Row="0">
                             <TabPanel x:Name="HeaderPanel" Panel.ZIndex="1" IsItemsHost="True" />
                             <!-- モダンな追加ボタン -->
                             <Button Click="AddTabButton_Click" 
@@ -1616,8 +1878,7 @@
                                     Margin="4,2,5,0"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    Cursor="Hand"
-                                    ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_AddNewTab}">
+                                    Cursor="Hand">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="ButtonBorder" 
@@ -1754,9 +2015,9 @@
                     Padding="50" 
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center"
-                    MinWidth="800"
-                    MaxWidth="900"
-                    MaxHeight="650"
+                    MinWidth="900"
+                    MaxWidth="1000"
+                    MaxHeight="750"
                     BorderBrush="#4A90E2"
                     BorderThickness="2">
                 <Border.Effect>
@@ -1793,7 +2054,19 @@
                                     </Border>
                                     <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsGenerate}" VerticalAlignment="Center" FontSize="14"/>
                                 </Grid>
-                                
+
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                        <TextBlock Text="Ctrl + 1 ~ 4" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsImageGridColumns}" VerticalAlignment="Center" FontSize="14"/>
+                                </Grid>
+
                                 <!-- タブ関連 -->
                                 <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsTabRelated}" FontSize="18" FontWeight="Bold" Foreground="#4A90E2" Margin="0,25,0,12"/>
                                 
@@ -1873,6 +2146,28 @@
                                     </Border>
                                     <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsPrevTab}" VerticalAlignment="Center" FontSize="14"/>
                                 </Grid>
+                                
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                        <TextBlock Text="Alt + Shift + D / Alt + Ctrl + D" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsNextOuterTab}" VerticalAlignment="Center" FontSize="14"/>
+                                </Grid>
+                                
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                        <TextBlock Text="Alt + Shift + A / Alt + Ctrl + A" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsPrevOuterTab}" VerticalAlignment="Center" FontSize="14"/>
+                                </Grid>
                             </StackPanel>
                             
                             <!-- 右列：エディタ関連 -->
@@ -1934,16 +2229,53 @@
                                     <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsShowSearch}" VerticalAlignment="Center" FontSize="14"/>
                                 </Grid>
                                 
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
-                                        <TextBlock Text="Esc" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsHideSearch}" VerticalAlignment="Center" FontSize="14"/>
-                                </Grid>
+                                                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                <TextBlock Text="Esc" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsHideSearch}" VerticalAlignment="Center" FontSize="14"/>
+                        </Grid>
+                        
+                        <!-- 全画面モードセクション -->
+                        <TextBlock Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsFullscreenMode}" FontSize="18" FontWeight="Bold" Foreground="#4A90E2" Margin="0,20,0,12"/>
+                        
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                <TextBlock Text="Ctrl + P" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsImagePanelFullscreen}" VerticalAlignment="Center" FontSize="14"/>
+                        </Grid>
+                        
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                <TextBlock Text="← / →" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsImagePanelTabNavigation}" VerticalAlignment="Center" FontSize="14"/>
+                        </Grid>
+                        
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#F0F0F0" CornerRadius="4" Padding="8,3" Margin="0,0,12,0">
+                                <TextBlock Text="Ctrl + L" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Grid.Column="1" Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ShortcutsToggleLeftPanel}" VerticalAlignment="Center" FontSize="14"/>
+                        </Grid>
+
                             </StackPanel>
                         </Grid>
                         
@@ -1988,6 +2320,119 @@
                     </StackPanel>
                 </ScrollViewer>
             </Border>
+        </Grid>
+        
+        <!-- 画像パネル全画面表示オーバーレイ -->
+        <Grid Visibility="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=IsImagePanelFullscreen, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Background="#F0F0F0" Panel.ZIndex="999"
+              MouseLeftButtonDown="ImagePanelFullscreen_MouseLeftButtonDown"
+              Focusable="True"
+              KeyDown="ImagePanelFullscreen_KeyDown">
+            
+            <!-- 画像グリッド表示エリア -->
+            <Grid Margin="5">
+                <!-- 通常表示（4列グリッド）を全画面で表示 -->
+                <ListBox ItemsSource="{Binding SelectedTab.SelectedInnerTab.ImagePaths}"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.CanContentScroll="False"
+                         Visibility="{Binding SelectedTab.SelectedInnerTab.IsImageExpanded, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                         MouseLeftButtonDown="ListBox_MouseLeftButtonDown"
+                         Style="{StaticResource ThinScrollBarListBoxStyle}">
+                    
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ImageGridColumns}" VerticalAlignment="Top"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="1" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="1" CornerRadius="3">
+                                <Image Stretch="Uniform" Margin="1"
+                                       RenderOptions.EdgeMode="Aliased"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       Source="{Binding Converter={StaticResource OptimizedImageConverter}}"
+                                       MouseLeftButtonDown="Image_MouseLeftButtonDown"
+                                       Cursor="Hand"/>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                
+                <!-- 拡大表示（1枚のみ）を全画面で表示 -->
+                <Grid Visibility="{Binding SelectedTab.SelectedInnerTab.IsImageExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      MouseLeftButtonDown="ExpandedImageBackground_MouseLeftButtonDown"
+                      Background="Transparent">
+                    
+                    <!-- 拡大画像 -->
+                    <Border Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="1" CornerRadius="3"
+                            Margin="5"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                            MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}">
+                        <Image Stretch="Uniform" Margin="1"
+                               RenderOptions.EdgeMode="Aliased"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               Source="{Binding SelectedTab.SelectedInnerTab.ExpandedImagePath, Converter={StaticResource OptimizedImageConverter}}"
+                               MouseLeftButtonDown="ExpandedImage_MouseLeftButtonDown"
+                               Cursor="Hand"/>
+                    </Border>
+                </Grid>
+            </Grid>
+            
+            <!-- 閉じるボタン -->
+            <Button HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    Margin="10" Width="40" Height="40"
+                    Background="#80000000" Foreground="White"
+                    BorderThickness="0"
+                    FontSize="20" FontWeight="Bold"
+                    Content="×" Cursor="Hand"
+                    Click="CloseImagePanelFullscreen_Click"
+                    ToolTip="閉じる (Ctrl+P または Esc)">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border" 
+                                            Background="{TemplateBinding Background}" 
+                                            CornerRadius="20"
+                                            BorderThickness="0">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#A0000000"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#C0000000"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </Grid>
 </Window>

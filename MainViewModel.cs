@@ -143,6 +143,8 @@ namespace SD.Yuzu
         public RelayCommand RefreshCheckpointCommand { get; set; } = null!;
         public RelayCommand MoveToPreviousInnerTabCommand { get; set; } = null!;
         public RelayCommand MoveToNextInnerTabCommand { get; set; } = null!;
+        public RelayCommand MoveToPreviousOuterTabCommand { get; set; } = null!;
+        public RelayCommand MoveToNextOuterTabCommand { get; set; } = null!;
 
         private int _outerTabCount = 0;
         
@@ -170,6 +172,9 @@ namespace SD.Yuzu
         public static bool LastEnableKohyaHiresFix { get; set; } = false;
         public static int LastKohyaBlockNumber { get; set; } = 3;
         public static double LastKohyaDownscaleFactor { get; set; } = 1.75;
+        public static bool LastKohyaAlwaysEnableCondition { get; set; } = false;
+        public static int LastKohyaConditionShortSide { get; set; } = 1280;
+        public static int LastKohyaConditionLongSide { get; set; } = 1420;
 
         // Random Resolution関連のLastプロパティ
         public static bool LastEnableRandomResolution { get; set; } = false;
@@ -208,6 +213,18 @@ namespace SD.Yuzu
             { 
                 _isKohyaHiresFixAvailable = value; 
                 OnPropertyChanged(nameof(IsKohyaHiresFixAvailable));
+            }
+        }
+
+        // Random resolution利用可能性プロパティ
+        private bool _isRandomResolutionAvailable = false;
+        public bool IsRandomResolutionAvailable
+        {
+            get => _isRandomResolutionAvailable;
+            set 
+            { 
+                _isRandomResolutionAvailable = value; 
+                OnPropertyChanged(nameof(IsRandomResolutionAvailable));
             }
         }
 
@@ -437,6 +454,10 @@ namespace SD.Yuzu
             MoveToPreviousInnerTabCommand = new RelayCommand(_ => MoveToPreviousInnerTab());
             MoveToNextInnerTabCommand = new RelayCommand(_ => MoveToNextInnerTab());
             
+            // 外側タブ移動コマンドの初期化
+            MoveToPreviousOuterTabCommand = new RelayCommand(_ => MoveToPreviousOuterTab());
+            MoveToNextOuterTabCommand = new RelayCommand(_ => MoveToNextOuterTab());
+            
             // Checkpoint初期化を非同期で実行
             _ = Task.Run(async () => await InitializeCheckpointsAsync());
         }
@@ -625,6 +646,13 @@ namespace SD.Yuzu
             
             // 複製されたタブの内側タブのタイトルを更新
             duplicatedTab.UpdateInnerTabTitles();
+            
+            // 複製されたタブとその内側タブのリストを初期化（サンプラー、スケジューラー、アップスケーラーの表示のため）
+            duplicatedTab.InitializeListsAfterRestore();
+            foreach (var innerTab in duplicatedTab.InnerTabs)
+            {
+                innerTab.InitializeListsAfterRestore();
+            }
             
             // 元のタブの右側に挿入
             var originalIndex = Tabs.IndexOf(originalTab);
@@ -899,6 +927,85 @@ namespace SD.Yuzu
             // cyclicで次のタブに移動
             int newIndex = currentIndex < SelectedTab.InnerTabs.Count - 1 ? currentIndex + 1 : 0;
             SelectedTab.SelectedInnerTab = SelectedTab.InnerTabs[newIndex];
+        }
+
+        /// <summary>
+        /// 前の外側タブに移動（cyclic）
+        /// </summary>
+        public void MoveToPreviousOuterTab()
+        {
+            if (Tabs.Count <= 1)
+                return;
+
+            int currentIndex = SelectedTab != null ? Tabs.IndexOf(SelectedTab) : 0;
+            
+            // cyclicで前のタブに移動
+            int newIndex = currentIndex > 0 ? currentIndex - 1 : Tabs.Count - 1;
+            SelectedTab = Tabs[newIndex];
+            
+            // フォーカスを現在の内側タブのプロンプトテキストボックスに設定
+            SetFocusToCurrentInnerTab();
+        }
+
+        /// <summary>
+        /// 次の外側タブに移動（cyclic）
+        /// </summary>
+        public void MoveToNextOuterTab()
+        {
+            if (Tabs.Count <= 1)
+                return;
+
+            int currentIndex = SelectedTab != null ? Tabs.IndexOf(SelectedTab) : 0;
+            
+            // cyclicで次のタブに移動
+            int newIndex = currentIndex < Tabs.Count - 1 ? currentIndex + 1 : 0;
+            SelectedTab = Tabs[newIndex];
+            
+            // フォーカスを現在の内側タブのプロンプトテキストボックスに設定
+            SetFocusToCurrentInnerTab();
+        }
+        
+        /// <summary>
+        /// 現在の内側タブのプロンプトテキストボックスにフォーカスを設定
+        /// </summary>
+        private void SetFocusToCurrentInnerTab()
+        {
+            try
+            {
+                // UIスレッドで実行する
+                if (Application.Current?.Dispatcher != null)
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        try
+                        {
+                            // MainWindowを取得
+                            if (Application.Current.MainWindow is MainWindow mainWindow)
+                            {
+                                // PromptTextBoxを探してフォーカスを設定
+                                var promptTextBox = FindVisualChild<AutoCompleteTextBox>(mainWindow, "PromptTextBox");
+                                if (promptTextBox != null)
+                                {
+                                    promptTextBox.Focus();
+                                    Debug.WriteLine("外側タブ移動後: PromptTextBoxにフォーカスを設定しました");
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("外側タブ移動後: PromptTextBoxが見つかりませんでした");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"外側タブ移動後のフォーカス設定処理エラー: {ex.Message}");
+                        }
+                    }), DispatcherPriority.Background);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"外側タブ移動後のフォーカス設定処理エラー: {ex.Message}");
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

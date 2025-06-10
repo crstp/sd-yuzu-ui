@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Input;
 
 namespace SD.Yuzu
 {
@@ -202,6 +203,16 @@ namespace SD.Yuzu
             }
         }
 
+        public int DefaultImageGridColumns
+        {
+            get => _settings.DefaultImageGridColumns;
+            set
+            {
+                _settings.DefaultImageGridColumns = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Resolution presets properties
         public ResolutionPreset SmallPresets
         {
@@ -251,6 +262,7 @@ namespace SD.Yuzu
                 DefaultBatchSize = AppSettings.Instance.DefaultBatchSize,
                 DefaultBatchCount = AppSettings.Instance.DefaultBatchCount,
                 DefaultImageLimit = AppSettings.Instance.DefaultImageLimit,
+                DefaultImageGridColumns = AppSettings.Instance.DefaultImageGridColumns,
                 SmallPresets = new ResolutionPreset
                 {
                     Portrait = AppSettings.Instance.SmallPresets.Portrait,
@@ -278,12 +290,22 @@ namespace SD.Yuzu
             
             // 言語変更イベントを購読
             _localization.LanguageChanged += OnLanguageChanged;
+            
+            // Escキーでキャンセル処理を実行するためのイベントハンドラーを追加
+            KeyDown += SettingsWindow_KeyDown;
         }
 
-        private void SettingsWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void SettingsWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // DataContextがバインドされた後に言語コンボボックスの選択状態を設定
             SetLanguageComboBoxSelection();
+            
+            // ベースURLが設定されている場合、起動時にバリデーションを実行
+            if (!string.IsNullOrWhiteSpace(BaseUrl))
+            {
+                ValidationMessage = string.Empty; // メッセージをクリア
+                await PerformValidation(BaseUrl);
+            }
         }
 
         private void SetLanguageComboBoxSelection()
@@ -383,6 +405,7 @@ namespace SD.Yuzu
                 AppSettings.Instance.DefaultBatchSize = DefaultBatchSize;
                 AppSettings.Instance.DefaultBatchCount = DefaultBatchCount;
                 AppSettings.Instance.DefaultImageLimit = DefaultImageLimit;
+                AppSettings.Instance.DefaultImageGridColumns = DefaultImageGridColumns;
                 AppSettings.Instance.SmallPresets = SmallPresets;
                 AppSettings.Instance.MediumPresets = MediumPresets;
                 AppSettings.Instance.LargePresets = LargePresets;
@@ -393,6 +416,18 @@ namespace SD.Yuzu
                 AppSettings.Instance.SaveToFile();
                 
                 System.Diagnostics.Debug.WriteLine($"Settings saved to file");
+
+                // TagDataManagerを再読み込み（設定変更を反映）
+                try
+                {
+                    await TagDataManager.Instance.ReloadAllDataAsync();
+                    System.Diagnostics.Debug.WriteLine("TagDataManager再読み込み完了");
+                }
+                catch (Exception tagEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"TagDataManager再読み込みエラー: {tagEx.Message}");
+                    // TagDataManagerの再読み込みエラーは設定保存の成功を妨げない
+                }
 
                 _isSaved = true;
                 DialogResult = true;
@@ -409,8 +444,7 @@ namespace SD.Yuzu
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
-            Close();
+            CancelSettings();
         }
 
         private async void CheckButton_Click(object sender, RoutedEventArgs e)
@@ -446,6 +480,7 @@ namespace SD.Yuzu
             // イベントハンドラーの購読を解除
             Loaded -= SettingsWindow_Loaded;
             _localization.LanguageChanged -= OnLanguageChanged;
+            KeyDown -= SettingsWindow_KeyDown;
             
             base.OnClosing(e);
         }
@@ -608,6 +643,11 @@ namespace SD.Yuzu
             ValidateImageLimit();
         }
 
+        private void DefaultImageGridColumnsTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            ValidateImageGridColumns();
+        }
+
         private void ValidateBatchSize()
         {
             if (int.TryParse(DefaultBatchSizeTextBox.Text, out int value))
@@ -673,6 +713,30 @@ namespace SD.Yuzu
             else if (!string.IsNullOrEmpty(DefaultImageLimitTextBox.Text))
             {
                 BatchValidationMessage = _localization.Settings_InvalidImageLimit;
+            }
+            else
+            {
+                ClearBatchValidationMessage();
+            }
+        }
+
+        private void ValidateImageGridColumns()
+        {
+            if (int.TryParse(DefaultImageGridColumnsTextBox.Text, out int value))
+            {
+                if (value >= 1 && value <= 8)
+                {
+                    DefaultImageGridColumns = value;
+                    ClearBatchValidationMessage();
+                }
+                else
+                {
+                    BatchValidationMessage = "画像グリッド列数は1から8の間の数値である必要があります";
+                }
+            }
+            else if (!string.IsNullOrEmpty(DefaultImageGridColumnsTextBox.Text))
+            {
+                BatchValidationMessage = "画像グリッド列数は1から8の間の数値である必要があります";
             }
             else
             {
@@ -751,6 +815,20 @@ namespace SD.Yuzu
             {
                 AutoCompleteTagFile = textBox.Text;
             }
+        }
+
+        private void SettingsWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                CancelSettings();
+            }
+        }
+
+        private void CancelSettings()
+        {
+            DialogResult = false;
+            Close();
         }
     }
 } 

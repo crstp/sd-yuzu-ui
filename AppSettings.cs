@@ -32,6 +32,9 @@ namespace SD.Yuzu
         
         // Image response limit
         public int DefaultImageLimit { get; set; } = 20;
+        
+        // Image grid columns setting
+        public int DefaultImageGridColumns { get; set; } = 4;
 
         // Resolution presets
         public ResolutionPreset SmallPresets { get; set; } = new ResolutionPreset

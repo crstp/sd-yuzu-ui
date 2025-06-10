@@ -196,7 +196,7 @@
                 <ComboBox x:Name="LanguageComboBox"
                           Style="{StaticResource ModernComboBoxStyle}"
                           SelectedValuePath="Tag"
-                          SelectionChanged="LanguageComboBox_SelectionChanged" Grid.ColumnSpan="2" Margin="41,0,0,1">
+                          SelectionChanged="LanguageComboBox_SelectionChanged" Grid.ColumnSpan="2" Margin="90,0,0,1">
                     <ComboBoxItem Style="{StaticResource ModernComboBoxItemStyle}" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_Language_English}" Tag="en-US"/>
                     <ComboBoxItem Style="{StaticResource ModernComboBoxItemStyle}" Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_Language_Japanese}" Tag="ja-JP"/>
                 </ComboBox>
@@ -359,18 +359,32 @@
                          TextChanged="DefaultBatchCountTextBox_TextChanged"/>
             </Grid>
 
-            <!-- Default Image Limit -->
+            <!-- Default Image Grid Columns and Image Limit in one row -->
             <Grid Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" 
+                       Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_DefaultImageGridColumns}" 
+                       FontWeight="Bold" 
+                       VerticalAlignment="Center"/>
+                <TextBox x:Name="DefaultImageGridColumnsTextBox" 
+                         Grid.Column="1"
+                         Height="25" 
+                         Text="{Binding DefaultImageGridColumns, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13"
+                         HorizontalContentAlignment="Center"
+                         TextChanged="DefaultImageGridColumnsTextBox_TextChanged"/>
+                <Label Grid.Column="3" 
                        Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=Settings_DefaultImageLimit}" 
                        FontWeight="Bold" 
                        VerticalAlignment="Center"/>
                 <TextBox x:Name="DefaultImageLimitTextBox" 
-                         Grid.Column="1"
+                         Grid.Column="4"
                          Height="25" 
                          Text="{Binding DefaultImageLimit, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="13"
@@ -535,7 +549,7 @@
                     Height="30" 
                     Margin="0,0,10,0"
                     Click="SaveButton_Click"
-                    Background="#4CAF50" 
+                    Background="#2196F3" 
                     Foreground="White"
                     FontWeight="Bold"/>
             <Button x:Name="CancelButton" 

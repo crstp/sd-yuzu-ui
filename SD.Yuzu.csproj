@@ -8,10 +8,19 @@
     <UseWPF>true</UseWPF>
     <UseAppHost>true</UseAppHost>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="icon.ico" />
+    <None Remove="Resources\yuzu_.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\yuzu_.ico" />
   </ItemGroup>
 
   <ItemGroup>

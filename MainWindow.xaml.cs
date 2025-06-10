@@ -25,9 +25,14 @@ using System.Windows.Documents;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
 
+/**
+ * ***** WARNING *****
+ * This source code was written using an AI. It's not the kind of code that humans should read. I think it's better to stop reading here unless you really need to.
+ * このソースコードはAIを利用して書かれました。とても人間が読むようなコードではありません。何か変える必要があるのでなければ読むのはやめた方がいいと思います
+ * ***** WARNING *****
+ */
 namespace SD.Yuzu
 {
-    // メモリ効率を改善するための画像コンバーター
     public class OptimizedImageConverter : IValueConverter
     {
         // 画像キャッシュを管理する静的辞書（WeakReferenceを使用してメモリリーク防止）
@@ -147,6 +152,9 @@ namespace SD.Yuzu
         public bool LastEnableKohyaHiresFix { get; set; } = false;
         public int LastKohyaBlockNumber { get; set; } = 3;
         public double LastKohyaDownscaleFactor { get; set; } = 1.75;
+        public bool LastKohyaAlwaysEnableCondition { get; set; } = false;
+        public int LastKohyaConditionShortSide { get; set; } = 1280;
+        public int LastKohyaConditionLongSide { get; set; } = 1420;
         
         // Random Resolution関連のプロパティ
         public bool LastEnableRandomResolution { get; set; } = false;
@@ -178,13 +186,9 @@ namespace SD.Yuzu
         public string ModelType { get; set; } = "SDXL";
         public List<ResolutionItem> CurrentResolutions { get; set; } = new List<ResolutionItem>
         {
-            new ResolutionItem(1024, 1024), 
-            new ResolutionItem(1152, 896), 
-            new ResolutionItem(896, 1152), 
-            new ResolutionItem(1216, 832), 
-            new ResolutionItem(832, 1216), 
-            new ResolutionItem(1344, 768), 
-            new ResolutionItem(768, 1344)
+            new ResolutionItem(1024, 1360), 
+            new ResolutionItem(1360, 1024), 
+            new ResolutionItem(1360, 1360),
         };
         public string WeightMode { get; set; } = "Equal Weights";
         public int MinDim { get; set; } = 832;
@@ -213,6 +217,8 @@ namespace SD.Yuzu
         }
     }
 
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -227,10 +233,14 @@ namespace SD.Yuzu
         // メモリ監視用フィールド
         private DispatcherTimer? _memoryMonitorTimer;
         private const long MEMORY_THRESHOLD_BYTES = 3 * 1024L * 1024L * 1024L; // 3GB
+        
+        // バージョンチェック関連
+        private VersionCheckManager? _versionCheckManager;
 
         // Dynamic Prompts スクリプト名
         private string? _dynamicPromptScriptName = null;
         private string? _kohyaHiresFixScriptName = null;
+        private string? _randomResolutionScriptName = null;
 
         // Random Resolution設定（グローバル）
         public static RandomResolutionSettings GlobalRandomResolutionSettings { get; set; } = new RandomResolutionSettings();
@@ -244,6 +254,36 @@ namespace SD.Yuzu
         {
             get { return (bool)GetValue(IsShortcutsOverlayVisibleProperty); }
             set { SetValue(IsShortcutsOverlayVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsImagePanelFullscreenProperty =
+            DependencyProperty.Register("IsImagePanelFullscreen", typeof(bool), typeof(MainWindow),
+                new PropertyMetadata(false));
+
+        public bool IsImagePanelFullscreen
+        {
+            get { return (bool)GetValue(IsImagePanelFullscreenProperty); }
+            set { SetValue(IsImagePanelFullscreenProperty, value); }
+        }
+
+        // 画像列数管理のDependencyProperty
+        public static readonly DependencyProperty ImageGridColumnsProperty =
+            DependencyProperty.Register("ImageGridColumns", typeof(int), typeof(MainWindow),
+                new PropertyMetadata(4)); // デフォルトは4列
+
+        public int ImageGridColumns
+        {
+            get { return (int)GetValue(ImageGridColumnsProperty); }
+            set { SetValue(ImageGridColumnsProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsLeftPanelVisibleProperty =
+            DependencyProperty.Register("IsLeftPanelVisible", typeof(bool), typeof(MainWindow), new PropertyMetadata(true));
+
+        public bool IsLeftPanelVisible
+        {
+            get { return (bool)GetValue(IsLeftPanelVisibleProperty); }
+            set { SetValue(IsLeftPanelVisibleProperty, value); }
         }
 
         public MainWindow()
@@ -262,6 +302,9 @@ namespace SD.Yuzu
             
             // メモリ監視タイマーを初期化
             InitializeMemoryMonitor();
+            
+            // バージョンチェック機能を初期化
+            InitializeVersionCheck();
         }
 
         private string GetDataFilePath()
@@ -393,8 +436,12 @@ namespace SD.Yuzu
                 
                 settings.WindowState = this.WindowState;
                 
-                // Splitterの位置を保存
-                settings.SplitterPosition = GetCurrentSplitterPosition();
+                // 左側パネルが表示されている場合のみSplitterの位置を保存
+                if (IsLeftPanelVisible)
+                {
+                    settings.SplitterPosition = GetCurrentSplitterPosition();
+                }
+                // 左側パネルが隠れている場合は既存の位置を保持（保存しない）
 
                 var filePath = GetWindowSettingsFilePath();
                 var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
@@ -429,6 +476,9 @@ namespace SD.Yuzu
         {
             LoadWindowSettings();
             
+            // app_settings.jsonから画像列数を読み込み
+            ImageGridColumns = AppSettings.Instance.DefaultImageGridColumns;
+            
             var vm = (MainViewModel)DataContext;
             vm.LoadFromFile(GetDataFilePath());
             LoadLastGenerateSettings();
@@ -436,6 +486,9 @@ namespace SD.Yuzu
             
             // Random Resolution設定を読み込み
             GlobalRandomResolutionSettings = LoadRandomResolutionSettings();
+            
+            // ViewModelにRandom Resolution設定を反映
+            vm.RefreshRandomResolutionText();
             
             // Undo履歴を読み込み
             vm.LoadUndoHistory();
@@ -485,6 +538,12 @@ namespace SD.Yuzu
             });
 
             _ = Task.Run(async () => await CleanupUnreferencedImagesAsync());
+            
+            // バージョンチェックを開始
+            _versionCheckManager?.StartVersionCheck();
+            
+            // 初期レイアウトを設定（少し遅延させて確実に実行）
+            Dispatcher.BeginInvoke(new Action(() => UpdateLeftPanelLayout()), DispatcherPriority.ApplicationIdle);
         }
 
         /// <summary>
@@ -594,6 +653,11 @@ namespace SD.Yuzu
                             .Where(script => script.Equals("kohya hrfix integrated", StringComparison.OrdinalIgnoreCase))
                             .ToList();
 
+                        // "random resolution"スクリプトを検索
+                        var randomResolutionScripts = txt2imgScripts
+                            .Where(script => script.Equals("random resolution", StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+
                         // Dynamic Prompts スクリプトの処理
                         bool isDynamicPromptAvailable = false;
                         if (dynamicPromptScripts.Count == 1)
@@ -628,12 +692,30 @@ namespace SD.Yuzu
                             Debug.WriteLine($"複数のKohya hires.fix スクリプトが見つかりました ({kohyaHiresFixScripts.Count}個)");
                         }
 
+                        // Random resolution スクリプトの処理
+                        bool isRandomResolutionAvailable = false;
+                        if (randomResolutionScripts.Count == 1)
+                        {
+                            _randomResolutionScriptName = randomResolutionScripts[0];
+                            isRandomResolutionAvailable = true;
+                            Debug.WriteLine($"Random resolution スクリプトを発見: {_randomResolutionScriptName}");
+                        }
+                        else if (randomResolutionScripts.Count == 0)
+                        {
+                            Debug.WriteLine("Random resolution スクリプトが見つかりませんでした");
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"複数のRandom resolution スクリプトが見つかりました ({randomResolutionScripts.Count}個)");
+                        }
+
                         // MainViewModelに結果を通知（UIスレッドで実行）
                         await Dispatcher.InvokeAsync(() =>
                         {
                             var vm = (MainViewModel)DataContext;
                             vm.IsDynamicPromptAvailable = isDynamicPromptAvailable;
                             vm.IsKohyaHiresFixAvailable = isKohyaHiresFixAvailable;
+                            vm.IsRandomResolutionAvailable = isRandomResolutionAvailable;
                         });
                     }
                     else
@@ -646,6 +728,7 @@ namespace SD.Yuzu
                             var vm = (MainViewModel)DataContext;
                             vm.IsDynamicPromptAvailable = false;
                             vm.IsKohyaHiresFixAvailable = false;
+                            vm.IsRandomResolutionAvailable = false;
                         });
                     }
                 }
@@ -659,6 +742,7 @@ namespace SD.Yuzu
                         var vm = (MainViewModel)DataContext;
                         vm.IsDynamicPromptAvailable = false;
                         vm.IsKohyaHiresFixAvailable = false;
+                        vm.IsRandomResolutionAvailable = false;
                     });
                 }
             }
@@ -673,6 +757,7 @@ namespace SD.Yuzu
                     var vm = (MainViewModel)DataContext;
                     vm.IsDynamicPromptAvailable = false;
                     vm.IsKohyaHiresFixAvailable = false;
+                    vm.IsRandomResolutionAvailable = false;
                 });
             }
             catch (Exception ex)
@@ -683,6 +768,7 @@ namespace SD.Yuzu
                     var vm = (MainViewModel)DataContext;
                     vm.IsDynamicPromptAvailable = false;
                     vm.IsKohyaHiresFixAvailable = false;
+                    vm.IsRandomResolutionAvailable = false;
                 });
             }
         }
@@ -749,6 +835,10 @@ namespace SD.Yuzu
                 _memoryMonitorTimer.Stop();
                 _memoryMonitorTimer = null;
             }
+            
+            // バージョンチェックマネージャーを解放
+            _versionCheckManager?.Dispose();
+            _versionCheckManager = null;
             
             // キューマネージャーを解放
             try
@@ -825,6 +915,24 @@ namespace SD.Yuzu
             // デバッグ用：キーイベントの確認
             Debug.WriteLine($"KeyDown: {e.Key}, Modifiers: {Keyboard.Modifiers}, SelectedTab: {vm.SelectedTab?.Title}, SelectedInnerTab: {vm.SelectedTab?.SelectedInnerTab?.Title}, IsImageExpanded: {vm.SelectedTab?.SelectedInnerTab?.IsImageExpanded}");
             
+            // Ctrl+Tabが押された場合、次の内側タブに移動（cyclic）
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
+            {
+                vm.MoveToNextInnerTab();
+                e.Handled = true;
+                Debug.WriteLine("KeyDown Ctrl+Tab: 次の内側タブに移動");
+                return;
+            }
+            
+            // Ctrl+Shift+Tabが押された場合、前の内側タブに移動（cyclic）
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                vm.MoveToPreviousInnerTab();
+                e.Handled = true;
+                Debug.WriteLine("KeyDown Ctrl+Shift+Tab: 前の内側タブに移動");
+                return;
+            }
+            
             // Alt+Aが押された場合、左の内側タブに移動（cyclic）
             if (e.Key == Key.A && (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && Keyboard.Modifiers == ModifierKeys.Alt)
             {
@@ -840,6 +948,42 @@ namespace SD.Yuzu
                 vm.MoveToNextInnerTab();
                 e.Handled = true;
                 Debug.WriteLine("KeyDown Alt+D: 右の内側タブに移動");
+                return;
+            }
+            
+            // Alt+Shift+Aが押された場合、前の外側タブに移動（cyclic）
+            if (e.Key == Key.A && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Shift)) == (ModifierKeys.Alt | ModifierKeys.Shift))
+            {
+                vm.MoveToPreviousOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("KeyDown Alt+Shift+A: 前の外側タブに移動");
+                return;
+            }
+            
+            // Alt+Shift+Dが押された場合、次の外側タブに移動（cyclic）
+            if (e.Key == Key.D && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Shift)) == (ModifierKeys.Alt | ModifierKeys.Shift))
+            {
+                vm.MoveToNextOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("KeyDown Alt+Shift+D: 次の外側タブに移動");
+                return;
+            }
+            
+            // Alt+Ctrl+Aが押された場合、前の外側タブに移動（cyclic）
+            if (e.Key == Key.A && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Control)) == (ModifierKeys.Alt | ModifierKeys.Control))
+            {
+                vm.MoveToPreviousOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("KeyDown Alt+Ctrl+A: 前の外側タブに移動");
+                return;
+            }
+            
+            // Alt+Ctrl+Dが押された場合、次の外側タブに移動（cyclic）
+            if (e.Key == Key.D && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Control)) == (ModifierKeys.Alt | ModifierKeys.Control))
+            {
+                vm.MoveToNextOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("KeyDown Alt+Ctrl+D: 次の外側タブに移動");
                 return;
             }
             
@@ -898,6 +1042,24 @@ namespace SD.Yuzu
                 return;
             }
 
+            // Escapeキーで画像パネル全画面表示を閉じる
+            if (e.Key == Key.Escape && IsImagePanelFullscreen)
+            {
+                ToggleImagePanelFullscreen();
+                e.Handled = true;
+                return;
+            }
+
+            // Ctrl+Pで画像パネル全画面表示を切り替え
+            if (e.Key == Key.P && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                ToggleImagePanelFullscreen();
+                e.Handled = true;
+                return;
+            }
+
+
+
             if (e.Key == Key.Enter &&
                 ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control ||
                  (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift))
@@ -915,6 +1077,7 @@ namespace SD.Yuzu
                 e.Handled = true; // イベントを処理済みとしてマーク
                 return;
             }
+
             // Ctrl+Tが押された場合、現在のタブの右側に新しい内側タブを追加
             else if (e.Key == Key.T && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
@@ -941,6 +1104,65 @@ namespace SD.Yuzu
             // デバッグ用：PreviewKeyDownイベントの確認
             Debug.WriteLine($"PreviewKeyDown: {e.Key}, Modifiers: {Keyboard.Modifiers}, SelectedTab: {vm.SelectedTab?.Title}, SelectedInnerTab: {vm.SelectedTab?.SelectedInnerTab?.Title}, IsImageExpanded: {vm.SelectedTab?.SelectedInnerTab?.IsImageExpanded}, IsFocused: {this.IsFocused}");
             
+            // Ctrl+1/2/3/4で画像グリッドの列数を変更（オートコンプリート回避のためPreviewKeyDownで処理）
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.D1:
+                    case Key.NumPad1:
+                        ImageGridColumns = 1;
+                        e.Handled = true;
+                        Debug.WriteLine("PreviewKeyDown Ctrl+1: 画像グリッドを1列に変更");
+                        return;
+                    case Key.D2:
+                    case Key.NumPad2:
+                        ImageGridColumns = 2;
+                        e.Handled = true;
+                        Debug.WriteLine("PreviewKeyDown Ctrl+2: 画像グリッドを2列に変更");
+                        return;
+                    case Key.D3:
+                    case Key.NumPad3:
+                        ImageGridColumns = 3;
+                        e.Handled = true;
+                        Debug.WriteLine("PreviewKeyDown Ctrl+3: 画像グリッドを3列に変更");
+                        return;
+                    case Key.D4:
+                    case Key.NumPad4:
+                        ImageGridColumns = 4;
+                        e.Handled = true;
+                        Debug.WriteLine("PreviewKeyDown Ctrl+4: 画像グリッドを4列に変更");
+                        return;
+                }
+            }
+            
+            // Ctrl+Lが押された場合、左側パネルの表示/非表示を切り替え（オートコンプリート回避のためPreviewKeyDownで処理）
+            if (e.Key == Key.L && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                ToggleLeftPanel();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Ctrl+L: 左側パネルの表示/非表示を切り替え");
+                return;
+            }
+            
+            // Ctrl+Tabが押された場合、次の内側タブに移動（cyclic）
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
+            {
+                vm.MoveToNextInnerTab();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Ctrl+Tab: 次の内側タブに移動");
+                return;
+            }
+            
+            // Ctrl+Shift+Tabが押された場合、前の内側タブに移動（cyclic）
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                vm.MoveToPreviousInnerTab();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Ctrl+Shift+Tab: 前の内側タブに移動");
+                return;
+            }
+            
             // Alt+Aが押された場合、左の内側タブに移動（cyclic）
             if (e.Key == Key.A && (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && Keyboard.Modifiers == ModifierKeys.Alt)
             {
@@ -956,6 +1178,42 @@ namespace SD.Yuzu
                 vm.MoveToNextInnerTab();
                 e.Handled = true;
                 Debug.WriteLine("PreviewKeyDown Alt+D: 右の内側タブに移動");
+                return;
+            }
+            
+            // Alt+Shift+Aが押された場合、前の外側タブに移動（cyclic）
+            if (e.Key == Key.A && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Shift)) == (ModifierKeys.Alt | ModifierKeys.Shift))
+            {
+                vm.MoveToPreviousOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Alt+Shift+A: 前の外側タブに移動");
+                return;
+            }
+            
+            // Alt+Shift+Dが押された場合、次の外側タブに移動（cyclic）
+            if (e.Key == Key.D && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Shift)) == (ModifierKeys.Alt | ModifierKeys.Shift))
+            {
+                vm.MoveToNextOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Alt+Shift+D: 次の外側タブに移動");
+                return;
+            }
+            
+            // Alt+Ctrl+Aが押された場合、前の外側タブに移動（cyclic）
+            if (e.Key == Key.A && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Control)) == (ModifierKeys.Alt | ModifierKeys.Control))
+            {
+                vm.MoveToPreviousOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Alt+Ctrl+A: 前の外側タブに移動");
+                return;
+            }
+            
+            // Alt+Ctrl+Dが押された場合、次の外側タブに移動（cyclic）
+            if (e.Key == Key.D && (Keyboard.Modifiers & (ModifierKeys.Alt | ModifierKeys.Control)) == (ModifierKeys.Alt | ModifierKeys.Control))
+            {
+                vm.MoveToNextOuterTab();
+                e.Handled = true;
+                Debug.WriteLine("PreviewKeyDown Alt+Ctrl+D: 次の外側タブに移動");
                 return;
             }
             
@@ -1107,27 +1365,12 @@ namespace SD.Yuzu
                     // バックグラウンドでGCを実行（メモリ最適化）
                     RunBackgroundGC();
                     
-                    // タブ切り替え後にMainWindowにフォーカスを設定とSplitter位置を復元（遅延実行で確実に）
+                    // タブ切り替え後にコンテンツを表示（遅延実行で確実に）
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         // フォーカス設定をコメントアウト（AutoCompleteTextBoxのフォーカスを保持するため）
                         // this.Focus();
                         // this.Activate(); // ウィンドウをアクティブにする
-                        
-                        // Splitterの位置を復元
-                        try
-                        {
-                            var settings = LoadWindowSettingsFromFile();
-                            if (settings != null)
-                            {
-                                SetSplitterPosition(settings.SplitterPosition);
-                                Debug.WriteLine($"Splitter position restored to: {settings.SplitterPosition}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"Failed to restore splitter position: {ex.Message}");
-                        }
                         
                         // コンテンツを表示
                         if (vm.SelectedTab?.SelectedInnerTab != null)
@@ -1135,7 +1378,10 @@ namespace SD.Yuzu
                             vm.SelectedTab.SelectedInnerTab.IsContentReady = true;
                         }
                         
-                        Debug.WriteLine($"Tab switched to: {vm.SelectedTab?.Title}, Splitter restored, IsFocused: {this.IsFocused}, IsActive: {this.IsActive}");
+                        Debug.WriteLine($"Tab switched to: {vm.SelectedTab?.Title}, IsFocused: {this.IsFocused}, IsActive: {this.IsActive}");
+                        
+                        // タブ切り替え後にレイアウトを更新
+                        UpdateLeftPanelLayout();
                     }), System.Windows.Threading.DispatcherPriority.Background);
                 }
             }
@@ -1156,27 +1402,12 @@ namespace SD.Yuzu
                     // バックグラウンドでGCを実行（メモリ最適化）
                     RunBackgroundGC();
                     
-                    // 内側タブ切り替え後にもMainWindowにフォーカスを設定とSplitter位置を復元（遅延実行で確実に）
+                    // 内側タブ切り替え後にコンテンツを表示（遅延実行で確実に）
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         // フォーカス設定をコメントアウト（AutoCompleteTextBoxのフォーカスを保持するため）
                         // this.Focus();
                         // this.Activate(); // ウィンドウをアクティブにする
-                        
-                        // Splitterの位置を復元
-                        try
-                        {
-                            var settings = LoadWindowSettingsFromFile();
-                            if (settings != null)
-                            {
-                                SetSplitterPosition(settings.SplitterPosition);
-                                Debug.WriteLine($"Splitter position restored to: {settings.SplitterPosition} (inner tab change)");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"Failed to restore splitter position: {ex.Message}");
-                        }
                         
                         // コンテンツを表示
                         if (outerTab?.SelectedInnerTab != null)
@@ -1184,7 +1415,10 @@ namespace SD.Yuzu
                             outerTab.SelectedInnerTab.IsContentReady = true;
                         }
                         
-                        Debug.WriteLine($"Inner tab switched to: {outerTab?.SelectedInnerTab?.Title}, Splitter restored, IsFocused: {this.IsFocused}, IsActive: {this.IsActive}");
+                        Debug.WriteLine($"Inner tab switched to: {outerTab?.SelectedInnerTab?.Title}, IsFocused: {this.IsFocused}, IsActive: {this.IsActive}");
+                        
+                        // 内側タブ切り替え後にレイアウトを更新
+                        UpdateLeftPanelLayout();
                     }), System.Windows.Threading.DispatcherPriority.Background);
                 }
             }
@@ -1303,6 +1537,23 @@ namespace SD.Yuzu
         /// <summary>
         /// 画像生成を実行する処理
         /// </summary>
+        /// <summary>
+        /// Kohya hires.fixの条件付き有効化の条件が満たされているかチェックします
+        /// </summary>
+        /// <param name="innerTab">チェック対象のタブ</param>
+        /// <returns>条件が満たされている場合はtrue</returns>
+        private bool IsKohyaConditionMet(TabItemViewModel innerTab)
+        {
+            int shortSide = Math.Min(innerTab.Width, innerTab.Height);
+            int longSide = Math.Max(innerTab.Width, innerTab.Height);
+            
+            bool conditionMet = shortSide >= innerTab.KohyaConditionShortSide && longSide >= innerTab.KohyaConditionLongSide;
+            
+            Debug.WriteLine($"Kohya条件チェック: short={shortSide}>={innerTab.KohyaConditionShortSide}, long={longSide}>={innerTab.KohyaConditionLongSide} => {conditionMet}");
+            
+            return conditionMet;
+        }
+
         private async Task GenerateImagesAsync()
         {
             // 画像生成前にプロンプトをフォーマット
@@ -1378,7 +1629,11 @@ namespace SD.Yuzu
             }
             
             // Kohya hires.fixのalwaysonScriptsサポート
-            if (innerTab.EnableKohyaHiresFix && !string.IsNullOrEmpty(_kohyaHiresFixScriptName))
+            // 通常のチェックボックスがオンまたは条件付き有効化がオンかつ条件を満たしている場合
+            bool shouldEnableKohyaHiresFix = innerTab.EnableKohyaHiresFix || 
+                (innerTab.KohyaAlwaysEnableCondition && IsKohyaConditionMet(innerTab));
+            
+            if (shouldEnableKohyaHiresFix && !string.IsNullOrEmpty(_kohyaHiresFixScriptName))
             {
                 if (alwaysonScripts == null)
                 {
@@ -1394,15 +1649,17 @@ namespace SD.Yuzu
                         innerTab.KohyaDownscaleFactor 
                     }
                 };
-                Debug.WriteLine($"Kohya hires.fix を有効化: {_kohyaHiresFixScriptName}, Block={innerTab.KohyaBlockNumber}, Downscale={innerTab.KohyaDownscaleFactor}");
+                
+                string reason = innerTab.EnableKohyaHiresFix ? "チェックボックス" : "条件付き有効化";
+                Debug.WriteLine($"Kohya hires.fix を有効化 ({reason}): {_kohyaHiresFixScriptName}, Block={innerTab.KohyaBlockNumber}, Downscale={innerTab.KohyaDownscaleFactor}");
             }
-            else if (innerTab.EnableKohyaHiresFix)
+            else if (shouldEnableKohyaHiresFix)
             {
                 Debug.WriteLine("Kohya hires.fix が有効化されていますが、スクリプト名が取得できていません");
             }
             
             // Random ResolutionのalwaysonScriptsサポート
-            if (innerTab.EnableRandomResolution)
+            if (innerTab.EnableRandomResolution && !string.IsNullOrEmpty(_randomResolutionScriptName))
             {
                 if (alwaysonScripts == null)
                 {
@@ -1420,11 +1677,15 @@ namespace SD.Yuzu
                     GlobalRandomResolutionSettings.MaxDim
                 };
                 
-                alwaysonScripts["random resolution"] = new Dictionary<string, object>
+                alwaysonScripts[_randomResolutionScriptName] = new Dictionary<string, object>
                 {
                     ["args"] = randomResolutionArgs
                 };
-                Debug.WriteLine($"Random Resolution を有効化: ModelType={GlobalRandomResolutionSettings.ModelType}, WeightMode={GlobalRandomResolutionSettings.WeightMode}, Resolutions={GlobalRandomResolutionSettings.CurrentResolutions.Count}個");
+                Debug.WriteLine($"Random Resolution を有効化: {_randomResolutionScriptName}, ModelType={GlobalRandomResolutionSettings.ModelType}, WeightMode={GlobalRandomResolutionSettings.WeightMode}, Resolutions={GlobalRandomResolutionSettings.CurrentResolutions.Count}個");
+            }
+            else if (innerTab.EnableRandomResolution)
+            {
+                Debug.WriteLine("Random Resolution が有効化されていますが、スクリプト名が取得できていません");
             }
             
             // ペイロードをDictionaryで動的に構築
@@ -2243,6 +2504,9 @@ namespace SD.Yuzu
                         MainViewModel.LastEnableKohyaHiresFix = settings.LastEnableKohyaHiresFix;
                         MainViewModel.LastKohyaBlockNumber = settings.LastKohyaBlockNumber;
                         MainViewModel.LastKohyaDownscaleFactor = settings.LastKohyaDownscaleFactor;
+                        MainViewModel.LastKohyaAlwaysEnableCondition = settings.LastKohyaAlwaysEnableCondition;
+                        MainViewModel.LastKohyaConditionShortSide = settings.LastKohyaConditionShortSide;
+                        MainViewModel.LastKohyaConditionLongSide = settings.LastKohyaConditionLongSide;
                         MainViewModel.LastEnableRandomResolution = settings.LastEnableRandomResolution;
                     }
                 }
@@ -2280,6 +2544,9 @@ namespace SD.Yuzu
                     LastEnableKohyaHiresFix = MainViewModel.LastEnableKohyaHiresFix,
                     LastKohyaBlockNumber = MainViewModel.LastKohyaBlockNumber,
                     LastKohyaDownscaleFactor = MainViewModel.LastKohyaDownscaleFactor,
+                    LastKohyaAlwaysEnableCondition = MainViewModel.LastKohyaAlwaysEnableCondition,
+                    LastKohyaConditionShortSide = MainViewModel.LastKohyaConditionShortSide,
+                    LastKohyaConditionLongSide = MainViewModel.LastKohyaConditionLongSide,
                     LastEnableRandomResolution = MainViewModel.LastEnableRandomResolution
                 };
 
@@ -6010,8 +6277,6 @@ namespace SD.Yuzu
                     vm.RandomResolutionNewHeight = 0;
                     
                     Debug.WriteLine($"新しい解像度を追加: {newResolution.Width}×{newResolution.Height}");
-                    MessageBox.Show($"Resolution {newResolution.Width}×{newResolution.Height} has been added.", 
-                                   "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
@@ -6153,6 +6418,9 @@ namespace SD.Yuzu
         {
             try
             {
+                // 設定画面を開く前の画像グリッド列数を記録
+                int previousGridColumns = AppSettings.Instance.DefaultImageGridColumns;
+                
                 var settingsWindow = new SettingsWindow
                 {
                     Owner = this
@@ -6164,6 +6432,19 @@ namespace SD.Yuzu
                 {
                     // 設定が保存された場合の処理
                     Debug.WriteLine("設定が保存されました");
+                    
+                    // 保存後の画像グリッド列数と比較
+                    int newGridColumns = AppSettings.Instance.DefaultImageGridColumns;
+                    if (previousGridColumns != newGridColumns)
+                    {
+                        // 実際に値が変更された場合のみ表示に反映
+                        ImageGridColumns = newGridColumns;
+                        Debug.WriteLine($"画像グリッド列数を更新しました: {previousGridColumns}列 → {newGridColumns}列");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"画像グリッド列数は変更されていません: {newGridColumns}列（一時的な変更を保持）");
+                    }
                     
                     // 必要に応じてTagDataManagerを再初期化
                     // （BASE_DIRECTORYやLoRAディレクトリが変更された場合）
@@ -6187,6 +6468,14 @@ namespace SD.Yuzu
                 MessageBox.Show($"Failed to display settings dialog: {ex.Message}", "Error", 
                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// 画像全画面表示ボタンがクリックされた時の処理
+        /// </summary>
+        private void ImageFullscreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleImagePanelFullscreen();
         }
 
         /// <summary>
@@ -6251,6 +6540,300 @@ namespace SD.Yuzu
             {
                 Debug.WriteLine($"Upscaler初期化エラー: {ex.Message}");
                 // エラーが発生してもアプリケーションの起動を妨げない
+            }
+        }
+        
+        private void InitializeVersionCheck()
+        {
+            _versionCheckManager = new VersionCheckManager(UpdateVersionCheckUI);
+        }
+        
+        private void UpdateVersionCheckUI(bool hasNewVersion)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (hasNewVersion)
+                {
+                    VersionCheckPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    VersionCheckPanel.Visibility = Visibility.Collapsed;
+                }
+            });
+        }
+        
+        private void NewVersionButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // GitHubページをデフォルトブラウザで開く
+                var url = "https://github.com/crstp/sd-yuzu/";
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+                
+                Debug.WriteLine($"GitHubページを開きました: {url}");
+                
+                // ボタンを非表示にする
+                VersionCheckPanel.Visibility = Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ブラウザ起動エラー: {ex.Message}");
+                // エラーが発生してもアプリケーションは継続
+                // エラーの場合でもボタンを非表示にする
+                VersionCheckPanel.Visibility = Visibility.Collapsed;
+            }
+        }
+        
+        private void CloseVersionButton_Click(object sender, RoutedEventArgs e)
+        {
+            // バージョンチェックパネルを非表示にする
+            VersionCheckPanel.Visibility = Visibility.Collapsed;
+            Debug.WriteLine("バージョンチェック通知を閉じました");
+        }
+
+        /// <summary>
+        /// 画像パネルの全画面表示を切り替える
+        /// </summary>
+        private void ToggleImagePanelFullscreen()
+        {
+            IsImagePanelFullscreen = !IsImagePanelFullscreen;
+            Debug.WriteLine($"画像パネル全画面表示: {IsImagePanelFullscreen}");
+            
+            if (IsImagePanelFullscreen)
+            {
+                // 全画面表示を開く時、オーバーレイにフォーカスを設定
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    var overlay = FindVisualChild<Grid>(this, g => g.Background?.ToString() == "#FFF0F0F0" && Panel.GetZIndex(g) == 999);
+                    if (overlay != null)
+                    {
+                        overlay.Focus();
+                        Debug.WriteLine("画像パネル全画面表示オーバーレイにフォーカスを設定");
+                    }
+                }), DispatcherPriority.Loaded);
+            }
+        }
+
+        /// <summary>
+        /// 左側パネルの表示/非表示を切り替える
+        /// </summary>
+        private void ToggleLeftPanel()
+        {
+            IsLeftPanelVisible = !IsLeftPanelVisible;
+            
+            // 少し遅延させてUIが更新されてから実行
+            Dispatcher.BeginInvoke(new Action(() => 
+            {
+                UpdateLeftPanelLayout();
+            }), DispatcherPriority.Render);
+        }
+
+        /// <summary>
+        /// パネル折り畳みボタンがクリックされた時の処理
+        /// </summary>
+        private void ToggleLeftPanelButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleLeftPanel();
+            Debug.WriteLine("パネル折り畳みボタンクリック: 左側パネルの表示/非表示を切り替え");
+        }
+
+        /// <summary>
+        /// 左側パネルのレイアウトを更新する
+        /// </summary>
+        private void UpdateLeftPanelLayout()
+        {
+            try
+            {
+                // すべてのグリッドを見つけて更新する
+                var contentGrids = new List<Grid>();
+                FindAllContentGrids(this, contentGrids);
+                
+                foreach (var contentGrid in contentGrids)
+                {
+                    if (contentGrid.ColumnDefinitions.Count == 3)
+                    {
+                        if (IsLeftPanelVisible)
+                        {
+                            // パネル表示時
+                            contentGrid.ColumnDefinitions[0].Width = new GridLength(350, GridUnitType.Pixel);
+                            contentGrid.ColumnDefinitions[0].MinWidth = 250;
+                            contentGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Pixel);
+                            
+                            // 子要素のVisibilityも更新
+                            UpdateChildVisibility(contentGrid, Visibility.Visible);
+                        }
+                        else
+                        {
+                            // パネル非表示時
+                            contentGrid.ColumnDefinitions[0].Width = new GridLength(0, GridUnitType.Pixel);
+                            contentGrid.ColumnDefinitions[0].MinWidth = 0;
+                            contentGrid.ColumnDefinitions[1].Width = new GridLength(0, GridUnitType.Pixel);
+                            
+                            // 子要素のVisibilityも更新
+                            UpdateChildVisibility(contentGrid, Visibility.Collapsed);
+                        }
+                        
+                        // 強制的にレイアウトを更新
+                        contentGrid.InvalidateArrange();
+                        contentGrid.InvalidateMeasure();
+                        contentGrid.UpdateLayout();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"レイアウト更新エラー: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// グリッドの子要素のVisibilityを更新する
+        /// </summary>
+        private void UpdateChildVisibility(Grid grid, Visibility visibility)
+        {
+            try
+            {
+                int childCount = VisualTreeHelper.GetChildrenCount(grid);
+                for (int i = 0; i < childCount; i++)
+                {
+                    var child = VisualTreeHelper.GetChild(grid, i);
+                    if (child is FrameworkElement element)
+                    {
+                        int column = Grid.GetColumn(element);
+                        // 左側パネル（列0）とスプリッター（列1）の要素のみ制御
+                        if (column == 0 || column == 1)
+                        {
+                            element.Visibility = visibility;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"子要素のVisibility更新エラー: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// すべてのコンテンツグリッドを再帰的に見つける
+        /// </summary>
+        private void FindAllContentGrids(DependencyObject parent, List<Grid> grids)
+        {
+            try
+            {
+                int childCount = VisualTreeHelper.GetChildrenCount(parent);
+                for (int i = 0; i < childCount; i++)
+                {
+                    var child = VisualTreeHelper.GetChild(parent, i);
+                    
+                    if (child is Grid grid && grid.ColumnDefinitions.Count == 3)
+                    {
+                        // 3列のグリッドで、ScrollViewerとGridSplitterを含むかチェック
+                        bool hasScrollViewer = false;
+                        bool hasGridSplitter = false;
+                        
+                        int gridChildCount = VisualTreeHelper.GetChildrenCount(grid);
+                        
+                        for (int j = 0; j < gridChildCount; j++)
+                        {
+                            var gridChild = VisualTreeHelper.GetChild(grid, j);
+                            int column = Grid.GetColumn(gridChild as FrameworkElement);
+                            
+                            if (gridChild is ScrollViewer && column == 0) hasScrollViewer = true;
+                            if (gridChild is GridSplitter && column == 1) hasGridSplitter = true;
+                        }
+                        
+                        // ScrollViewerとGridSplitterがあれば対象とする
+                        if (hasScrollViewer && hasGridSplitter)
+                        {
+                            grids.Add(grid);
+                        }
+                    }
+                    
+                    FindAllContentGrids(child, grids);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"FindAllContentGridsエラー: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 画像パネル全画面表示の閉じるボタンがクリックされた時の処理
+        /// </summary>
+        private void CloseImagePanelFullscreen_Click(object sender, RoutedEventArgs e)
+        {
+            IsImagePanelFullscreen = false;
+            Debug.WriteLine("画像パネル全画面表示を閉じました（ボタンクリック）");
+        }
+
+        /// <summary>
+        /// 画像パネル全画面表示の背景がクリックされた時の処理
+        /// </summary>
+        private void ImagePanelFullscreen_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // 背景がクリックされた場合のみ全画面表示を閉じる
+            if (e.Source == sender)
+            {
+                IsImagePanelFullscreen = false;
+                Debug.WriteLine("画像パネル全画面表示を閉じました（背景クリック）");
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// 画像パネル全画面表示中のキーイベント処理
+        /// </summary>
+        private void ImagePanelFullscreen_KeyDown(object sender, KeyEventArgs e)
+        {
+            var vm = (MainViewModel)DataContext;
+            
+            // Ctrl+Tabが押された場合、次の内側タブに移動（cyclic）
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
+            {
+                vm.MoveToNextInnerTab();
+                e.Handled = true;
+                Debug.WriteLine("画像パネル全画面表示: Ctrl+Tab - 次の内側タブに移動");
+                return;
+            }
+            
+            // Ctrl+Shift+Tabが押された場合、前の内側タブに移動（cyclic）
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                vm.MoveToPreviousInnerTab();
+                e.Handled = true;
+                Debug.WriteLine("画像パネル全画面表示: Ctrl+Shift+Tab - 前の内側タブに移動");
+                return;
+            }
+            
+            // 左矢印キーで前のタブに移動
+            if (e.Key == Key.Left)
+            {
+                if (vm.MoveToPreviousInnerTabCommand?.CanExecute(null) == true)
+                {
+                    vm.MoveToPreviousInnerTabCommand.Execute(null);
+                    Debug.WriteLine("画像パネル全画面表示: 前のタブに移動");
+                }
+                e.Handled = true;
+                return;
+            }
+            
+            // 右矢印キーで次のタブに移動
+            if (e.Key == Key.Right)
+            {
+                if (vm.MoveToNextInnerTabCommand?.CanExecute(null) == true)
+                {
+                    vm.MoveToNextInnerTabCommand.Execute(null);
+                    Debug.WriteLine("画像パネル全画面表示: 次のタブに移動");
+                }
+                e.Handled = true;
+                return;
             }
         }
     }

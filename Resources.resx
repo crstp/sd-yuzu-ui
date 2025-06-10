@@ -259,6 +259,9 @@ Please specify the correct Stable Diffusion WebUI root directory.</value>
   <data name="MainWindow_KohyaHiresFixNotInstalled" xml:space="preserve">
     <value>Kohya hires.fix integrated isn't installed (it's not forge?)</value>
   </data>
+  <data name="MainWindow_RandomResolutionNotInstalled" xml:space="preserve">
+    <value>Random Resolution isn't installed (it's not forge?)</value>
+  </data>
   <data name="MainWindow_KohyaHiresFix" xml:space="preserve">
     <value>Kohya hires.fix</value>
   </data>
@@ -270,6 +273,15 @@ Please specify the correct Stable Diffusion WebUI root directory.</value>
   </data>
   <data name="MainWindow_DownscaleFactor" xml:space="preserve">
     <value>Downscale factor</value>
+  </data>
+  <data name="MainWindow_KohyaAlwaysEnableCondition" xml:space="preserve">
+    <value>Always enable if the following condition is met</value>
+  </data>
+  <data name="MainWindow_KohyaConditionShortSide" xml:space="preserve">
+    <value>Short side >=</value>
+  </data>
+  <data name="MainWindow_KohyaConditionLongSide" xml:space="preserve">
+    <value>and Long side >=</value>
   </data>
   <data name="MainWindow_HiresFix" xml:space="preserve">
     <value>Hires.fix</value>
@@ -466,6 +478,13 @@ Please specify the correct Stable Diffusion WebUI root directory.</value>
   <data name="MainWindow_SwapDimensionsTooltip" xml:space="preserve">
     <value>Swap width and height</value>
   </data>
+  <data name="MainWindow_ImageFullscreen" xml:space="preserve">
+    <value>Gallery View
+    (Ctrl+P)</value>
+  </data>
+  <data name="MainWindow_ImageFullscreenTooltip" xml:space="preserve">
+    <value>Toggle image panel gallery view (Ctrl+P)</value>
+  </data>
 
   <!-- Error Messages -->
   <data name="Error_Title" xml:space="preserve">
@@ -614,6 +633,9 @@ An error occurred while setting the image: {1}</value>
   <data name="Settings_DefaultImageLimitDescription" xml:space="preserve">
     <value>Maximum number of images to display per generation</value>
   </data>
+  <data name="Settings_DefaultImageGridColumns" xml:space="preserve">
+    <value>Image grid columns</value>
+  </data>
   <data name="Settings_InvalidImageLimit" xml:space="preserve">
     <value>Image limit must be a number between 1 and 1000</value>
   </data>
@@ -650,6 +672,9 @@ An error occurred while setting the image: {1}</value>
   <data name="MainWindow_ShortcutsEditor" xml:space="preserve">
     <value>Editor</value>
   </data>
+  <data name="MainWindow_ShortcutsFullscreenMode" xml:space="preserve">
+    <value>Gallery view</value>
+  </data>
   <!-- ショートカットの説明文 -->
   <data name="MainWindow_ShortcutsGenerate" xml:space="preserve">
     <value>Generate images</value>
@@ -675,6 +700,12 @@ An error occurred while setting the image: {1}</value>
   <data name="MainWindow_ShortcutsPrevTab" xml:space="preserve">
     <value>Move to previous inner tab</value>
   </data>
+  <data name="MainWindow_ShortcutsNextOuterTab" xml:space="preserve">
+    <value>Move to next outer tab</value>
+  </data>
+  <data name="MainWindow_ShortcutsPrevOuterTab" xml:space="preserve">
+    <value>Move to previous outer tab</value>
+  </data>
   <data name="MainWindow_ShortcutsIncreaseWeight" xml:space="preserve">
     <value>Increase weight of tag at cursor</value>
   </data>
@@ -695,6 +726,18 @@ An error occurred while setting the image: {1}</value>
   </data>
   <data name="MainWindow_ShortcutsCloseOverlay" xml:space="preserve">
     <value>Close</value>
+  </data>
+  <data name="MainWindow_ShortcutsImagePanelFullscreen" xml:space="preserve">
+    <value>Toggle image panel gallery</value>
+  </data>
+  <data name="MainWindow_ShortcutsImagePanelTabNavigation" xml:space="preserve">
+    <value>Navigate tabs in fullscreen mode</value>
+  </data>
+  <data name="MainWindow_ShortcutsImageGridColumns" xml:space="preserve">
+    <value>Temporarily change image grid columns</value>
+  </data>
+  <data name="MainWindow_ShortcutsToggleLeftPanel" xml:space="preserve">
+    <value>Toggle left panel on/off</value>
   </data>
 
   <!-- GroupBox Headers -->
@@ -718,5 +761,22 @@ An error occurred while setting the image: {1}</value>
   </data>
   <data name="MainWindow_ResolutionBulkChangeDescription" xml:space="preserve">
     <value>Bulk apply presets, keeping aspect ratio</value>
+  </data>
+
+  <!-- Version Check Messages -->
+  <data name="MainWindow_NewVersionAvailable" xml:space="preserve">
+    <value>New version available</value>
+  </data>
+  <data name="MainWindow_NewVersionTooltip" xml:space="preserve">
+    <value>A new version of the application is available. Please check for updates.</value>
+  </data>
+
+  <!-- Left Panel Toggle -->
+  <data name="MainWindow_ToggleLeftPanel" xml:space="preserve">
+    <value>Panel Collapse
+(Ctrl+L)</value>
+  </data>
+  <data name="MainWindow_ToggleLeftPanelTooltip" xml:space="preserve">
+    <value>Toggle left panel visibility (Ctrl+L)</value>
   </data>
 </root> 

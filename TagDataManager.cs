@@ -109,6 +109,27 @@ namespace SD.Yuzu
         }
         
         /// <summary>
+        /// データを強制的に再読み込みする
+        /// </summary>
+        public async Task ReloadAllDataAsync()
+        {
+            lock (_lock)
+            {
+                _isLoaded = false;
+                _isLoading = false;
+            }
+            
+            // データをクリア
+            _allTags.Clear();
+            _loraFiles.Clear();
+            _wildcards.Clear();
+            _initialCharacterCandidates.Clear();
+            
+            Debug.WriteLine("TagDataManager: 強制再読み込み開始");
+            await LoadAllDataAsync();
+        }
+        
+        /// <summary>
         /// データがロード完了しているかチェック
         /// </summary>
         public bool IsDataLoaded => _isLoaded;
@@ -120,9 +141,20 @@ namespace SD.Yuzu
         {
             try
             {
-                // 設定からベースディレクトリを取得してタグファイルのパスを構築
-                string baseDirectory = AppSettings.Instance.StableDiffusionDirectory;
-                string tagFilePath = Path.Combine(baseDirectory, "extensions", "a1111-sd-webui-tagcomplete", "tags", "danbooru.csv");
+                string tagFilePath;
+                
+                // AutoCompleteTagFile設定を優先して使用
+                if (!string.IsNullOrEmpty(AppSettings.Instance.AutoCompleteTagFile) && 
+                    File.Exists(AppSettings.Instance.AutoCompleteTagFile))
+                {
+                    tagFilePath = AppSettings.Instance.AutoCompleteTagFile;
+                }
+                else
+                {
+                    // フォールバック：従来のデフォルトパス
+                    string baseDirectory = AppSettings.Instance.StableDiffusionDirectory;
+                    tagFilePath = Path.Combine(baseDirectory, "extensions", "a1111-sd-webui-tagcomplete", "tags", "danbooru.csv");
+                }
                 
                 Debug.WriteLine($"TagDataManager: タグファイルパス: {tagFilePath}");
                 

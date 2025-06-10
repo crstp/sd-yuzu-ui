@@ -259,6 +259,9 @@
   <data name="MainWindow_KohyaHiresFixNotInstalled" xml:space="preserve">
     <value>Kohya hires.fix integratedがインストールされていません(forgeではない?)</value>
   </data>
+  <data name="MainWindow_RandomResolutionNotInstalled" xml:space="preserve">
+    <value>Random Resolutionがインストールされていません(forgeではない?)</value>
+  </data>
   <data name="MainWindow_KohyaHiresFix" xml:space="preserve">
     <value>Kohya hires.fix</value>
   </data>
@@ -270,6 +273,15 @@
   </data>
   <data name="MainWindow_DownscaleFactor" xml:space="preserve">
     <value>ダウンスケール係数</value>
+  </data>
+  <data name="MainWindow_KohyaAlwaysEnableCondition" xml:space="preserve">
+    <value>以下の条件が満たされた場合は常に有効にする</value>
+  </data>
+  <data name="MainWindow_KohyaConditionShortSide" xml:space="preserve">
+    <value>短辺 >=</value>
+  </data>
+  <data name="MainWindow_KohyaConditionLongSide" xml:space="preserve">
+    <value>かつ長辺 >=</value>
   </data>
   <data name="MainWindow_HiresFix" xml:space="preserve">
     <value>Hires.fix</value>
@@ -466,6 +478,13 @@
   <data name="MainWindow_SwapDimensionsTooltip" xml:space="preserve">
     <value>幅と高さを入れ替え</value>
   </data>
+  <data name="MainWindow_ImageFullscreen" xml:space="preserve">
+    <value>ギャラリー表示
+    (Ctrl+P)</value>
+  </data>
+  <data name="MainWindow_ImageFullscreenTooltip" xml:space="preserve">
+    <value>画像パネルのギャラリー表示を切り替え (Ctrl+P)</value>
+  </data>
 
   <!-- Error Messages -->
   <data name="Error_Title" xml:space="preserve">
@@ -614,6 +633,9 @@
   <data name="Settings_DefaultImageLimitDescription" xml:space="preserve">
     <value>生成あたりの最大表示画像数</value>
   </data>
+  <data name="Settings_DefaultImageGridColumns" xml:space="preserve">
+    <value>画像グリッド列数</value>
+  </data>
   <data name="Settings_InvalidImageLimit" xml:space="preserve">
     <value>画像制限数は1から1000の間の数値である必要があります</value>
   </data>
@@ -650,6 +672,9 @@
   <data name="MainWindow_ShortcutsEditor" xml:space="preserve">
     <value>エディタ関連</value>
   </data>
+  <data name="MainWindow_ShortcutsFullscreenMode" xml:space="preserve">
+    <value>ギャラリーモード</value>
+  </data>
   <!-- ショートカットの説明文 -->
   <data name="MainWindow_ShortcutsGenerate" xml:space="preserve">
     <value>画像生成</value>
@@ -675,6 +700,12 @@
   <data name="MainWindow_ShortcutsPrevTab" xml:space="preserve">
     <value>前の内側タブに移動</value>
   </data>
+  <data name="MainWindow_ShortcutsNextOuterTab" xml:space="preserve">
+    <value>次の外側タブに移動</value>
+  </data>
+  <data name="MainWindow_ShortcutsPrevOuterTab" xml:space="preserve">
+    <value>前の外側タブに移動</value>
+  </data>
   <data name="MainWindow_ShortcutsIncreaseWeight" xml:space="preserve">
     <value>カーソル位置のタグの重みを増加</value>
   </data>
@@ -695,6 +726,18 @@
   </data>
   <data name="MainWindow_ShortcutsCloseOverlay" xml:space="preserve">
     <value>閉じる</value>
+  </data>
+  <data name="MainWindow_ShortcutsImagePanelFullscreen" xml:space="preserve">
+    <value>画像パネルのギャラリー表示を切り替え</value>
+  </data>
+  <data name="MainWindow_ShortcutsImagePanelTabNavigation" xml:space="preserve">
+    <value>ギャラリーモードでタブ移動</value>
+  </data>
+  <data name="MainWindow_ShortcutsImageGridColumns" xml:space="preserve">
+    <value>画像グリッドの列数を一時変更</value>
+  </data>
+  <data name="MainWindow_ShortcutsToggleLeftPanel" xml:space="preserve">
+    <value>左パネルの表示/非表示を切り替え</value>
   </data>
 
   <!-- GroupBox Headers -->
@@ -718,5 +761,22 @@
   </data>
   <data name="MainWindow_ResolutionBulkChangeDescription" xml:space="preserve">
     <value>アスペクト比を維持してプリセットに近い解像度に一括変更</value>
+  </data>
+
+  <!-- Version Check Messages -->
+  <data name="MainWindow_NewVersionAvailable" xml:space="preserve">
+    <value>新しいバージョンがあります</value>
+  </data>
+  <data name="MainWindow_NewVersionTooltip" xml:space="preserve">
+    <value>新しいバージョンが利用可能です。アップデートを確認してください。</value>
+  </data>
+
+  <!-- Left Panel Toggle -->
+  <data name="MainWindow_ToggleLeftPanel" xml:space="preserve">
+    <value>左パネル折り畳み
+(Ctrl+L)</value>
+  </data>
+  <data name="MainWindow_ToggleLeftPanelTooltip" xml:space="preserve">
+    <value>左側のパネルの表示/非表示を切り替えます (Ctrl+L)</value>
   </data>
 </root> 

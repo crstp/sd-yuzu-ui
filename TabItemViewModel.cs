@@ -534,6 +534,87 @@ namespace SD.Yuzu
             set { _bulkStepsValue = value; OnPropertyChanged(nameof(BulkStepsValue)); }
         }
 
+        private bool _kohyaAlwaysEnableCondition = false;
+        public bool KohyaAlwaysEnableCondition
+        {
+            get => _kohyaAlwaysEnableCondition;
+            set { _kohyaAlwaysEnableCondition = value; OnPropertyChanged(nameof(KohyaAlwaysEnableCondition)); }
+        }
+
+        private int _kohyaConditionShortSide = 1280;
+        private string _kohyaConditionShortSideText = "1280";
+        
+        public int KohyaConditionShortSide
+        {
+            get => _kohyaConditionShortSide;
+            set 
+            { 
+                if (value > 0)
+                {
+                    _kohyaConditionShortSide = value; 
+                    OnPropertyChanged(nameof(KohyaConditionShortSide)); 
+                }
+            }
+        }
+
+        // 文字列プロパティ（UI用、フォーマットなし）
+        public string KohyaConditionShortSideText
+        {
+            get => _kohyaConditionShortSideText;
+            set
+            {
+                // 入力された値を常に保持（前の値に戻さない）
+                _kohyaConditionShortSideText = value;
+                OnPropertyChanged(nameof(KohyaConditionShortSideText));
+                
+                // 有効な正の整数の場合のみ内部値を更新
+                if (!string.IsNullOrEmpty(value) && 
+                    int.TryParse(value, out int result) && 
+                    result > 0)
+                {
+                    _kohyaConditionShortSide = result;
+                    OnPropertyChanged(nameof(KohyaConditionShortSide));
+                }
+            }
+        }
+
+        private int _kohyaConditionLongSide = 1420;
+        private string _kohyaConditionLongSideText = "1420";
+        
+        public int KohyaConditionLongSide
+        {
+            get => _kohyaConditionLongSide;
+            set 
+            { 
+                if (value > 0)
+                {
+                    _kohyaConditionLongSide = value; 
+                    OnPropertyChanged(nameof(KohyaConditionLongSide)); 
+                }
+            }
+        }
+
+        // 文字列プロパティ（UI用、フォーマットなし）
+        public string KohyaConditionLongSideText
+        {
+            get => _kohyaConditionLongSideText;
+            set
+            {
+                // 入力された値を常に保持（前の値に戻さない）
+                _kohyaConditionLongSideText = value;
+                OnPropertyChanged(nameof(KohyaConditionLongSideText));
+                
+                // 有効な正の整数の場合のみ内部値を更新
+                if (!string.IsNullOrEmpty(value) && 
+                    int.TryParse(value, out int result) && 
+                    result > 0)
+                {
+                    _kohyaConditionLongSide = result;
+                    OnPropertyChanged(nameof(KohyaConditionLongSide));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -572,6 +653,9 @@ namespace SD.Yuzu
             public bool EnableKohyaHiresFix { get; set; } = false;
             public int KohyaBlockNumber { get; set; } = 3;
             public double KohyaDownscaleFactor { get; set; } = 1.75;
+            public bool KohyaAlwaysEnableCondition { get; set; } = false;
+            public int KohyaConditionShortSide { get; set; } = 1280;
+            public int KohyaConditionLongSide { get; set; } = 1420;
             
             // Random Resolution関連のプロパティ
             public bool EnableRandomResolution { get; set; } = false;
@@ -612,6 +696,9 @@ namespace SD.Yuzu
                 EnableKohyaHiresFix = this.EnableKohyaHiresFix,
                 KohyaBlockNumber = this.KohyaBlockNumber,
                 KohyaDownscaleFactor = this.KohyaDownscaleFactor,
+                KohyaAlwaysEnableCondition = this.KohyaAlwaysEnableCondition,
+                KohyaConditionShortSide = this.KohyaConditionShortSide,
+                KohyaConditionLongSide = this.KohyaConditionLongSide,
                 EnableRandomResolution = this.EnableRandomResolution
                 // GenerateButtonTextは保存しない（アプリ終了時にGenerate状態はリセットされるため）
             };
@@ -730,6 +817,9 @@ namespace SD.Yuzu
                 EnableKohyaHiresFix = dto.EnableKohyaHiresFix,
                 KohyaBlockNumber = dto.KohyaBlockNumber,
                 KohyaDownscaleFactor = dto.KohyaDownscaleFactor,
+                KohyaAlwaysEnableCondition = dto.KohyaAlwaysEnableCondition,
+                KohyaConditionShortSide = dto.KohyaConditionShortSide,
+                KohyaConditionLongSide = dto.KohyaConditionLongSide,
                 EnableRandomResolution = dto.EnableRandomResolution,
                 GenerateButtonText = "Generate" // 復元時は常に"Generate"に設定
             };

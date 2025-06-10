@@ -106,7 +106,7 @@ namespace SD.Yuzu
             
             _searchTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(150)
+                Interval = TimeSpan.FromMilliseconds(1)
             };
             _searchTimer.Tick += SearchTimer_Tick;
 
@@ -284,6 +284,8 @@ namespace SD.Yuzu
         private void SearchPanelTextBox_GotFocus(object? sender, RoutedEventArgs e)
         {
             SetSearchBoxFocus(true);
+            // 検索ボックスにフォーカスが移った時は既存のオートコンプリートウィンドウを閉じる
+            _completionWindow?.Close();
             Debug.WriteLine("検索パネルTextBoxフォーカス取得 - オートコンプリート無効化");
         }
 
@@ -575,6 +577,12 @@ namespace SD.Yuzu
         /// </summary>
         private bool ShouldPerformAutoComplete()
         {
+            // 検索ボックスにフォーカスがある場合はオートコンプリートを無効化
+            if (_searchBoxHasFocus)
+            {
+                return false;
+            }
+
             // 削除操作直後や重み調整直後は抑制
             if (_justPerformedDeletion || _justAdjustedWeight)
             {
@@ -2424,6 +2432,31 @@ namespace SD.Yuzu
 
         private void MainTextEditor_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // Shift+Enter: 生成コマンドを実行（改行を防ぐため、PreviewKeyDownで早期にキャッチ）
+            if (e.Key == Key.Enter && (e.KeyboardDevice.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+            {
+                // オートコンプリートを閉じる
+                _completionWindow?.Close();
+                
+                // 親ウィンドウで生成コマンドを実行
+                var mainWindow = Window.GetWindow(this) as MainWindow;
+                if (mainWindow?.DataContext is MainViewModel vm && vm.GenerateCommand?.CanExecute(null) == true)
+                {
+                    vm.GenerateCommand.Execute(null);
+                }
+                
+                e.Handled = true; // 改行入力を防ぐ
+                return;
+            }
+
+            // Ctrl+P: 画像パネル全画面表示（MainWindowで処理させるため、ここでは何もしない）
+            if (e.Key == Key.P && (e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                // オートコンプリートを閉じてイベントを親に委譲
+                _completionWindow?.Close();
+                return; // e.Handled = trueしない（親で処理させる）
+            }
+
             // Ctrl+D: カンマで区切られた範囲を削除
             if (e.Key == Key.D && (e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
@@ -2537,7 +2570,7 @@ namespace SD.Yuzu
 
         private void MainTextEditor_LostFocus(object sender, RoutedEventArgs e)
         {
-            Task.Delay(100).ContinueWith(_ =>
+            Task.Delay(50).ContinueWith(_ =>
             {
                 Dispatcher.Invoke(() =>
                 {

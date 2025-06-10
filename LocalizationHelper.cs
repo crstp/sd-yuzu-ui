@@ -143,6 +143,7 @@ namespace SD.Yuzu
             OnPropertyChanged(nameof(Settings_DefaultImageLimit));
             OnPropertyChanged(nameof(Settings_DefaultImageLimitDescription));
             OnPropertyChanged(nameof(Settings_InvalidImageLimit));
+            OnPropertyChanged(nameof(Settings_DefaultImageGridColumns));
             OnPropertyChanged(nameof(Settings_ResolutionPresets));
             OnPropertyChanged(nameof(Settings_ResolutionPresetsPortrait));
             OnPropertyChanged(nameof(Settings_ResolutionPresetsLandscape));
@@ -193,10 +194,14 @@ namespace SD.Yuzu
             OnPropertyChanged(nameof(MainWindow_CombinatorialGenerationTooltip));
             OnPropertyChanged(nameof(MainWindow_DynamicPromptNotInstalled));
             OnPropertyChanged(nameof(MainWindow_KohyaHiresFixNotInstalled));
+            OnPropertyChanged(nameof(MainWindow_RandomResolutionNotInstalled));
             OnPropertyChanged(nameof(MainWindow_KohyaHiresFix));
             OnPropertyChanged(nameof(MainWindow_KohyaHiresFixTooltip));
             OnPropertyChanged(nameof(MainWindow_BlockNumber));
             OnPropertyChanged(nameof(MainWindow_DownscaleFactor));
+            OnPropertyChanged(nameof(MainWindow_KohyaAlwaysEnableCondition));
+            OnPropertyChanged(nameof(MainWindow_KohyaConditionShortSide));
+            OnPropertyChanged(nameof(MainWindow_KohyaConditionLongSide));
             OnPropertyChanged(nameof(MainWindow_HiresFix));
             OnPropertyChanged(nameof(MainWindow_Upscaler));
             OnPropertyChanged(nameof(MainWindow_HiresSteps));
@@ -243,11 +248,14 @@ namespace SD.Yuzu
             OnPropertyChanged(nameof(MainWindow_GenerateRightTooltip));
             OnPropertyChanged(nameof(MainWindow_OpenSettings));
             OnPropertyChanged(nameof(MainWindow_OpenShortcuts));
+            OnPropertyChanged(nameof(MainWindow_ImageFullscreen));
+            OnPropertyChanged(nameof(MainWindow_ImageFullscreenTooltip));
             OnPropertyChanged(nameof(MainWindow_KeyboardShortcuts));
             OnPropertyChanged(nameof(MainWindow_ShortcutsOverlayTitle));
             OnPropertyChanged(nameof(MainWindow_ShortcutsGeneral));
             OnPropertyChanged(nameof(MainWindow_ShortcutsTabRelated));
             OnPropertyChanged(nameof(MainWindow_ShortcutsEditor));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsFullscreenMode));
             OnPropertyChanged(nameof(MainWindow_ShortcutsGenerate));
             OnPropertyChanged(nameof(MainWindow_ShortcutsNewTab));
             OnPropertyChanged(nameof(MainWindow_ShortcutsRestoreTab));
@@ -256,6 +264,8 @@ namespace SD.Yuzu
             OnPropertyChanged(nameof(MainWindow_ShortcutsCloseTab));
             OnPropertyChanged(nameof(MainWindow_ShortcutsNextTab));
             OnPropertyChanged(nameof(MainWindow_ShortcutsPrevTab));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsNextOuterTab));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsPrevOuterTab));
             OnPropertyChanged(nameof(MainWindow_ShortcutsIncreaseWeight));
             OnPropertyChanged(nameof(MainWindow_ShortcutsDecreaseWeight));
             OnPropertyChanged(nameof(MainWindow_ShortcutsInvertWeight));
@@ -263,9 +273,19 @@ namespace SD.Yuzu
             OnPropertyChanged(nameof(MainWindow_ShortcutsShowSearch));
             OnPropertyChanged(nameof(MainWindow_ShortcutsHideSearch));
             OnPropertyChanged(nameof(MainWindow_ShortcutsCloseOverlay));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsImagePanelFullscreen));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsImagePanelTabNavigation));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsImageGridColumns));
+            OnPropertyChanged(nameof(MainWindow_ShortcutsToggleLeftPanel));
             OnPropertyChanged(nameof(MainWindow_BulkImport));
-            OnPropertyChanged(nameof(MainWindow_MemoryUsage));
-            
+                        OnPropertyChanged(nameof(MainWindow_MemoryUsage));
+            OnPropertyChanged(nameof(MainWindow_NewVersionAvailable));
+            OnPropertyChanged(nameof(MainWindow_NewVersionTooltip));
+
+            // Left Panel Toggle
+            OnPropertyChanged(nameof(MainWindow_ToggleLeftPanel));
+            OnPropertyChanged(nameof(MainWindow_ToggleLeftPanelTooltip));
+
             // GroupBox Headers
             OnPropertyChanged(nameof(MainWindow_PromptBulkReplace));
             OnPropertyChanged(nameof(MainWindow_StepsBulkChange));
@@ -335,6 +355,7 @@ namespace SD.Yuzu
         public string Settings_DefaultImageLimit => GetString("Settings_DefaultImageLimit");
         public string Settings_DefaultImageLimitDescription => GetString("Settings_DefaultImageLimitDescription");
         public string Settings_InvalidImageLimit => GetString("Settings_InvalidImageLimit");
+        public string Settings_DefaultImageGridColumns => GetString("Settings_DefaultImageGridColumns");
 
         // Resolution Presets Settings
         public string Settings_ResolutionPresets => GetString("Settings_ResolutionPresets");
@@ -390,10 +411,14 @@ namespace SD.Yuzu
         public string MainWindow_CombinatorialGenerationTooltip => GetString("MainWindow_CombinatorialGenerationTooltip");
         public string MainWindow_DynamicPromptNotInstalled => GetString("MainWindow_DynamicPromptNotInstalled");
         public string MainWindow_KohyaHiresFixNotInstalled => GetString("MainWindow_KohyaHiresFixNotInstalled");
+        public string MainWindow_RandomResolutionNotInstalled => GetString("MainWindow_RandomResolutionNotInstalled");
         public string MainWindow_KohyaHiresFix => GetString("MainWindow_KohyaHiresFix");
         public string MainWindow_KohyaHiresFixTooltip => GetString("MainWindow_KohyaHiresFixTooltip");
         public string MainWindow_BlockNumber => GetString("MainWindow_BlockNumber");
         public string MainWindow_DownscaleFactor => GetString("MainWindow_DownscaleFactor");
+        public string MainWindow_KohyaAlwaysEnableCondition => GetString("MainWindow_KohyaAlwaysEnableCondition");
+        public string MainWindow_KohyaConditionShortSide => GetString("MainWindow_KohyaConditionShortSide");
+        public string MainWindow_KohyaConditionLongSide => GetString("MainWindow_KohyaConditionLongSide");
         public string MainWindow_HiresFix => GetString("MainWindow_HiresFix");
         public string MainWindow_Upscaler => GetString("MainWindow_Upscaler");
         public string MainWindow_HiresSteps => GetString("MainWindow_HiresSteps");
@@ -445,6 +470,7 @@ namespace SD.Yuzu
         public string MainWindow_ShortcutsGeneral => GetString("MainWindow_ShortcutsGeneral");
         public string MainWindow_ShortcutsTabRelated => GetString("MainWindow_ShortcutsTabRelated");
         public string MainWindow_ShortcutsEditor => GetString("MainWindow_ShortcutsEditor");
+        public string MainWindow_ShortcutsFullscreenMode => GetString("MainWindow_ShortcutsFullscreenMode");
         public string MainWindow_ShortcutsGenerate => GetString("MainWindow_ShortcutsGenerate");
         public string MainWindow_ShortcutsNewTab => GetString("MainWindow_ShortcutsNewTab");
         public string MainWindow_ShortcutsRestoreTab => GetString("MainWindow_ShortcutsRestoreTab");
@@ -453,6 +479,8 @@ namespace SD.Yuzu
         public string MainWindow_ShortcutsCloseTab => GetString("MainWindow_ShortcutsCloseTab");
         public string MainWindow_ShortcutsNextTab => GetString("MainWindow_ShortcutsNextTab");
         public string MainWindow_ShortcutsPrevTab => GetString("MainWindow_ShortcutsPrevTab");
+        public string MainWindow_ShortcutsNextOuterTab => GetString("MainWindow_ShortcutsNextOuterTab");
+        public string MainWindow_ShortcutsPrevOuterTab => GetString("MainWindow_ShortcutsPrevOuterTab");
         public string MainWindow_ShortcutsIncreaseWeight => GetString("MainWindow_ShortcutsIncreaseWeight");
         public string MainWindow_ShortcutsDecreaseWeight => GetString("MainWindow_ShortcutsDecreaseWeight");
         public string MainWindow_ShortcutsInvertWeight => GetString("MainWindow_ShortcutsInvertWeight");
@@ -460,8 +488,14 @@ namespace SD.Yuzu
         public string MainWindow_ShortcutsShowSearch => GetString("MainWindow_ShortcutsShowSearch");
         public string MainWindow_ShortcutsHideSearch => GetString("MainWindow_ShortcutsHideSearch");
         public string MainWindow_ShortcutsCloseOverlay => GetString("MainWindow_ShortcutsCloseOverlay");
+        public string MainWindow_ShortcutsImagePanelFullscreen => GetString("MainWindow_ShortcutsImagePanelFullscreen");
+        public string MainWindow_ShortcutsImagePanelTabNavigation => GetString("MainWindow_ShortcutsImagePanelTabNavigation");
+        public string MainWindow_ShortcutsImageGridColumns => GetString("MainWindow_ShortcutsImageGridColumns");
+        public string MainWindow_ShortcutsToggleLeftPanel => GetString("MainWindow_ShortcutsToggleLeftPanel");
         public string MainWindow_BulkImport => GetString("MainWindow_BulkImport");
         public string MainWindow_MemoryUsage => GetString("MainWindow_MemoryUsage");
+        public string MainWindow_NewVersionAvailable => GetString("MainWindow_NewVersionAvailable");
+        public string MainWindow_NewVersionTooltip => GetString("MainWindow_NewVersionTooltip");
 
         // GroupBox Headers
         public string MainWindow_PromptBulkReplace => GetString("MainWindow_PromptBulkReplace");
@@ -505,8 +539,14 @@ namespace SD.Yuzu
         public string MainWindow_PortraitLTooltip => GetString("MainWindow_PortraitLTooltip");
         public string MainWindow_SquareLTooltip => GetString("MainWindow_SquareLTooltip");
         public string MainWindow_SwapDimensionsTooltip => GetString("MainWindow_SwapDimensionsTooltip");
+        public string MainWindow_ImageFullscreen => GetString("MainWindow_ImageFullscreen");
+        public string MainWindow_ImageFullscreenTooltip => GetString("MainWindow_ImageFullscreenTooltip");
         public string MainWindow_SeedPlus1Tooltip => GetString("MainWindow_SeedPlus1Tooltip");
         public string MainWindow_SeedMinus1Tooltip => GetString("MainWindow_SeedMinus1Tooltip");
         public string MainWindow_RecycleTooltip => GetString("MainWindow_RecycleTooltip");
+        
+        // Left Panel Toggle
+        public string MainWindow_ToggleLeftPanel => GetString("MainWindow_ToggleLeftPanel");
+        public string MainWindow_ToggleLeftPanelTooltip => GetString("MainWindow_ToggleLeftPanelTooltip");
     }
 } 
