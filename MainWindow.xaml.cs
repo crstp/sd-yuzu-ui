@@ -217,6 +217,137 @@ namespace SD.Yuzu
         }
     }
 
+    /// <summary>
+    /// タブ数に応じて幅を調整するコンバーター
+    /// </summary>
+    public class TabWidthConverter : IMultiValueConverter
+    {
+        public double MinWidth { get; set; } = 20.0;
+        public double MaxWidth { get; set; } = 60.0;
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length >= 2 &&
+                values[0] is double totalWidth &&
+                values[1] is int count &&
+                count > 0)
+            {
+                // 追加ボタン分の幅を差し引く
+                double available = Math.Max(0, totalWidth - 30);
+                double width = available / count;
+                if (width < MinWidth) width = MinWidth;
+                if (width > MaxWidth) width = MaxWidth;
+                return width;
+            }
+
+            return DependencyProperty.UnsetValue;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// アクティブタブを考慮したタブ幅調整コンバーター
+    /// </summary>
+    public class ActiveTabWidthConverter : IMultiValueConverter
+    {
+        public double MinWidth { get; set; } = 20.0;
+        public double MaxWidth { get; set; } = 60.0;
+        public double ActiveWidth { get; set; } = 60.0;
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length >= 3 &&
+                values[0] is double totalWidth &&
+                values[1] is int count &&
+                values[2] is bool isSelected &&
+                count > 0)
+            {
+                // アクティブなタブは固定幅
+                if (isSelected)
+                {
+                    return ActiveWidth;
+                }
+
+                // 非アクティブなタブは動的幅計算
+                // アクティブタブ分の幅を差し引く
+                double available = Math.Max(0, totalWidth - 30 - ActiveWidth); // 30は追加ボタン分、ActiveWidthはアクティブタブ分
+                int nonActiveCount = count - 1; // アクティブタブを除く
+                
+                if (nonActiveCount <= 0)
+                {
+                    return ActiveWidth; // アクティブタブのみの場合
+                }
+
+                double width = available / nonActiveCount;
+                if (width < MinWidth) width = MinWidth;
+                if (width > MaxWidth) width = MaxWidth;
+                return width;
+            }
+
+            return DependencyProperty.UnsetValue;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// タブの幅に応じて閉じるボタンの表示を切り替えるコンバーター
+    /// </summary>
+    public class CloseButtonVisibilityConverter : IMultiValueConverter
+    {
+        public double Threshold { get; set; } = 60.0;
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length >= 2 &&
+                values[0] is bool isGenerating &&
+                values[1] is double width)
+            {
+                if (isGenerating) return Visibility.Collapsed;
+                return width < Threshold ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            return Visibility.Visible;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// アクティブタブを考慮した閉じるボタン表示コンバーター
+    /// </summary>
+    public class ActiveTabCloseButtonVisibilityConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length >= 2 &&
+                values[0] is bool isGenerating &&
+                values[1] is bool isSelected)
+            {
+                if (isGenerating) return Visibility.Collapsed;
+                // アクティブなタブは常に閉じるボタンを表示
+                return isSelected ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 
 
     /// <summary>
