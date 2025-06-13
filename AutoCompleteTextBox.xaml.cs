@@ -2617,6 +2617,14 @@ namespace SD.Yuzu
             if (string.IsNullOrEmpty(text) || caretPosition < 0 || caretPosition > text.Length)
                 return null;
 
+            // まず、LoRAタグ（<...>）の内部にいるかどうかをチェック
+            var loraTagBounds = FindLoRATagBounds(text, caretPosition);
+            if (loraTagBounds.HasValue)
+            {
+                // LoRAタグ内部にいる場合は、タグ全体を削除対象とする
+                return loraTagBounds;
+            }
+
             // キャレット位置から左方向にカンマまたは文字列開始を探す
             int start = caretPosition;
             while (start > 0)
@@ -2629,11 +2637,6 @@ namespace SD.Yuzu
                 else if (text[start - 1] == '\n' || text[start - 1] == '\r')
                 {
                     // 改行で区切られている場合も境界とする
-                    break;
-                }
-                else if (text[start - 1] == '>')
-                {
-                    // LoRAタグの終了記号も境界とする
                     break;
                 }
                 start--;
@@ -2651,11 +2654,6 @@ namespace SD.Yuzu
                 else if (text[end] == '\n' || text[end] == '\r')
                 {
                     // 改行で区切られている場合も境界とする
-                    break;
-                }
-                else if (text[end] == '<')
-                {
-                    // LoRAタグの開始記号も境界とする
                     break;
                 }
                 end++;
@@ -2685,6 +2683,66 @@ namespace SD.Yuzu
                 }
                 
                 Debug.WriteLine($"カンマ区切り範囲検出: '{content}' (位置: {start}-{end})");
+                return (start, length);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// LoRAタグ（<...>）の境界を検索
+        /// </summary>
+        private (int start, int length)? FindLoRATagBounds(string text, int caretPosition)
+        {
+            if (string.IsNullOrEmpty(text) || caretPosition < 0 || caretPosition > text.Length)
+                return null;
+
+            // キャレット位置から左方向に '<' を探す
+            int start = -1;
+            for (int i = caretPosition; i >= 0; i--)
+            {
+                if (text[i] == '<')
+                {
+                    start = i;
+                    break;
+                }
+                else if (text[i] == ',' || text[i] == '\n' || text[i] == '\r')
+                {
+                    // カンマや改行に遭遇したら、LoRAタグの範囲外
+                    break;
+                }
+            }
+
+            // '<' が見つからない場合は、LoRAタグ内部ではない
+            if (start == -1)
+                return null;
+
+            // 見つかった '<' から右方向に '>' を探す
+            int end = -1;
+            for (int i = start + 1; i < text.Length; i++)
+            {
+                if (text[i] == '>')
+                {
+                    end = i + 1; // '>' の次の位置
+                    break;
+                }
+                else if (text[i] == ',' || text[i] == '\n' || text[i] == '\r')
+                {
+                    // カンマや改行に遭遇したら、不正なLoRAタグ
+                    return null;
+                }
+            }
+
+            // '>' が見つからない場合は、不正なLoRAタグ
+            if (end == -1)
+                return null;
+
+            // キャレット位置がLoRAタグの範囲内にあるかチェック
+            if (caretPosition >= start && caretPosition <= end)
+            {
+                int length = end - start;
+                string content = text.Substring(start, length);
+                Debug.WriteLine($"LoRAタグ検出: '{content}' (位置: {start}-{end})");
                 return (start, length);
             }
 
