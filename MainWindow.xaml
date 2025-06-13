@@ -595,9 +595,10 @@
                                 <Style TargetType="TabItem">
                                     <Setter Property="Width">
                                         <Setter.Value>
-                                            <MultiBinding Converter="{StaticResource TabWidthConverter}">
+                                            <MultiBinding Converter="{StaticResource ActiveTabWidthConverter}">
                                                 <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="ActualWidth"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="Items.Count"/>
+                                                <Binding RelativeSource="{RelativeSource Self}" Path="IsSelected"/>
                                             </MultiBinding>
                                         </Setter.Value>
                                     </Setter>
@@ -685,9 +686,9 @@
                                                             BorderThickness="0"
                                                             Cursor="Hand">
                                                         <Button.Visibility>
-                                                            <MultiBinding Converter="{StaticResource CloseButtonVisibilityConverter}">
+                                                            <MultiBinding Converter="{StaticResource ActiveTabCloseButtonVisibilityConverter}">
                                                                 <Binding Path="IsGenerating"/>
-                                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="ActualWidth"/>
+                                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="IsSelected"/>
                                                             </MultiBinding>
                                                         </Button.Visibility>
                                                         <Button.Template>
