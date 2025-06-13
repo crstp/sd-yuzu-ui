@@ -593,6 +593,14 @@
                                     Drop="InnerTabControl_Drop">
                             <TabControl.Resources>
                                 <Style TargetType="TabItem">
+                                    <Setter Property="Width">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{StaticResource TabWidthConverter}">
+                                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="ActualWidth"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="Items.Count"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="TabItem">
@@ -675,8 +683,13 @@
                                                             Height="16"
                                                             Background="Transparent"
                                                             BorderThickness="0"
-                                                            Cursor="Hand"
-                                                            Visibility="{Binding IsGenerating, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                                            Cursor="Hand">
+                                                        <Button.Visibility>
+                                                            <MultiBinding Converter="{StaticResource CloseButtonVisibilityConverter}">
+                                                                <Binding Path="IsGenerating"/>
+                                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="ActualWidth"/>
+                                                            </MultiBinding>
+                                                        </Button.Visibility>
                                                         <Button.Template>
                                                             <ControlTemplate TargetType="Button">
                                                                 <Border x:Name="ButtonBorder" 
