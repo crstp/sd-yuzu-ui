@@ -328,6 +328,36 @@ namespace SD.Yuzu
     /// </summary>
     public class ActiveTabCloseButtonVisibilityConverter : IMultiValueConverter
     {
+        public double Threshold { get; set; } = 60.0;
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length >= 3 &&
+                values[0] is bool isGenerating &&
+                values[1] is bool isSelected &&
+                values[2] is double width)
+            {
+                if (isGenerating) return Visibility.Collapsed;
+                // アクティブなタブは常に閉じるボタンを表示
+                if (isSelected) return Visibility.Visible;
+                // 非アクティブなタブは幅がThreshold以上の場合に表示
+                return width >= Threshold ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 外側タブ専用の閉じるボタン表示コンバーター（アクティブ時のみ表示）
+    /// </summary>
+    public class OuterTabCloseButtonVisibilityConverter : IMultiValueConverter
+    {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length >= 2 &&
@@ -335,7 +365,7 @@ namespace SD.Yuzu
                 values[1] is bool isSelected)
             {
                 if (isGenerating) return Visibility.Collapsed;
-                // アクティブなタブは常に閉じるボタンを表示
+                // 外側タブの閉じるボタンはアクティブ時のみ表示
                 return isSelected ? Visibility.Visible : Visibility.Collapsed;
             }
 
@@ -891,7 +921,7 @@ namespace SD.Yuzu
                     vm.IsRandomResolutionAvailable = false;
                 });
             }
-            catch (Exception ex)
+            catch
             {
                 // MainViewModelに拡張機能利用不可能を通知（UIスレッドで実行）
                 await Dispatcher.InvokeAsync(() =>
@@ -1837,7 +1867,7 @@ namespace SD.Yuzu
                 ["save_images"] = true,
                 // Hires.fix関連のパラメータ
                 ["enable_hr"] = innerTab.EnableHiresFix,
-                ["hr_upscaler"] = innerTab.EnableHiresFix ? innerTab.SelectedUpscaler : null,
+                ["hr_upscaler"] = innerTab.EnableHiresFix ? innerTab.SelectedUpscaler : string.Empty,
                 ["hr_second_pass_steps"] = innerTab.EnableHiresFix ? innerTab.HiresSteps : 0,
                 ["denoising_strength"] = innerTab.EnableHiresFix ? innerTab.DenoisingStrength : 0,
                 ["hr_scale"] = innerTab.EnableHiresFix ? innerTab.HiresUpscaleBy : 1.0
@@ -2005,6 +2035,44 @@ namespace SD.Yuzu
         }
 
         /// <summary>
+        /// 外側タブの名前変更メニューアイテムがクリックされた時の処理
+        /// </summary>
+        private void RenameTabMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // コンテキストメニューのDataContextから元のタブを取得
+                var menuItem = sender as MenuItem;
+                var contextMenu = menuItem?.Parent as ContextMenu;
+                var tab = contextMenu?.DataContext as TabItemViewModel;
+                
+                if (tab != null)
+                {
+                    // MainTabControlを直接参照
+                    if (MainTabControl != null)
+                    {
+                        // タブのコンテナを取得
+                        var tabItem = MainTabControl.ItemContainerGenerator.ContainerFromItem(tab) as TabItem;
+                        if (tabItem != null)
+                        {
+                            // TabItemからTextBlockを検索
+                            var titleTextBlock = FindVisualChild<TextBlock>(tabItem, tb => tb.Name == "TitleTextBlock");
+                            if (titleTextBlock != null)
+                            {
+                                StartEditingTitle(titleTextBlock);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"タブ名編集エラー: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// 指定された外側タブの画像を一括エクスポートします
         /// </summary>
         /// <param name="outerTab">エクスポート対象の外側タブ</param>
@@ -2078,7 +2146,7 @@ namespace SD.Yuzu
                         }
                     }
 
-                    MessageBox.Show($"Exported {exportedCount}images to {exportDir}", 
+                    MessageBox.Show($"Exported {exportedCount} images to {exportDir}", 
                                    "Export successful", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -4539,6 +4607,8 @@ namespace SD.Yuzu
                 await this.Dispatcher.InvokeAsync(() =>
                 {
                     var vm = (MainViewModel)DataContext;
+                    
+                    // 現在開いているタブの画像
                     foreach (var outerTab in vm.Tabs)
                     {
                         foreach (var innerTab in outerTab.InnerTabs)
@@ -4552,9 +4622,38 @@ namespace SD.Yuzu
                             }
                         }
                     }
+                    
+                    // 閉じたタブのスタックから参照される画像も収集
+                    foreach (var closedTabInfo in vm.GetClosedTabsStack())
+                    {
+                        if (closedTabInfo.OuterTabInstance != null)
+                        {
+                            foreach (var innerTab in closedTabInfo.OuterTabInstance.InnerTabs)
+                            {
+                                foreach (var imagePath in innerTab.ImagePaths)
+                                {
+                                    if (!string.IsNullOrEmpty(imagePath))
+                                    {
+                                        referencedImagePaths.Add(Path.GetFullPath(imagePath));
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (closedTabInfo.ClosedInnerTabInstance != null)
+                        {
+                            foreach (var imagePath in closedTabInfo.ClosedInnerTabInstance.ImagePaths)
+                            {
+                                if (!string.IsNullOrEmpty(imagePath))
+                                {
+                                    referencedImagePaths.Add(Path.GetFullPath(imagePath));
+                                }
+                            }
+                        }
+                    }
                 });
                 
-                Debug.WriteLine($"参照されている画像数: {referencedImagePaths.Count}");
+                Debug.WriteLine($"参照されている画像数（開いているタブ + 閉じたタブ）: {referencedImagePaths.Count}");
                 
                 // 参照されていないファイルを特定
                 var unreferencedFiles = allImageFiles

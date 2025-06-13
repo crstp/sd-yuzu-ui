@@ -8,6 +8,9 @@
         <local:CloseButtonVisibilityConverter x:Key="CloseButtonVisibilityConverter" Threshold="60" />
         <local:TabWidthConverter x:Key="TabWidthConverter" MinWidth="20" MaxWidth="60" />
         <local:ActiveTabWidthConverter x:Key="ActiveTabWidthConverter" MinWidth="20" MaxWidth="60" ActiveWidth="60" />
-        <local:ActiveTabCloseButtonVisibilityConverter x:Key="ActiveTabCloseButtonVisibilityConverter" />
+        <local:ActiveTabWidthConverter x:Key="OuterActiveTabWidthConverter" MinWidth="35" MaxWidth="120" ActiveWidth="120" />
+        <local:ActiveTabCloseButtonVisibilityConverter x:Key="ActiveTabCloseButtonVisibilityConverter" Threshold="60" />
+        <local:ActiveTabCloseButtonVisibilityConverter x:Key="OuterActiveTabCloseButtonVisibilityConverter" Threshold="80" />
+        <local:OuterTabCloseButtonVisibilityConverter x:Key="OuterTabCloseButtonVisibilityConverter" />
     </Application.Resources>
 </Application>

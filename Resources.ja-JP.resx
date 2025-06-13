@@ -439,14 +439,17 @@
   <data name="MainWindow_Duplicate" xml:space="preserve">
     <value>複製</value>
   </data>
+  <data name="MainWindow_RenameTab" xml:space="preserve">
+    <value>名前変更 (ダブルクリック)</value>
+  </data>
   <data name="MainWindow_ExportImages" xml:space="preserve">
     <value>画像エクスポート</value>
   </data>
   <data name="MainWindow_DuplicateRight" xml:space="preserve">
-    <value>右に複製</value>
+    <value>右に複製 (Ctrl+R)</value>
   </data>
   <data name="MainWindow_DuplicateLeft" xml:space="preserve">
-    <value>左に複製</value>
+    <value>左に複製 (Ctrl+Shift+R)</value>
   </data>
   <data name="MainWindow_PortraitTooltip" xml:space="preserve">
     <value>縦長寸法を設定</value>

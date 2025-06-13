@@ -159,6 +159,7 @@ namespace SD.Yuzu
             OnPropertyChanged(nameof(MainWindow_AddTab));
             OnPropertyChanged(nameof(MainWindow_AddNewTab));
             OnPropertyChanged(nameof(MainWindow_Duplicate));
+            OnPropertyChanged(nameof(MainWindow_RenameTab));
             OnPropertyChanged(nameof(MainWindow_ExportImages));
             OnPropertyChanged(nameof(MainWindow_DuplicateRight));
             OnPropertyChanged(nameof(MainWindow_DuplicateLeft));
@@ -376,6 +377,7 @@ namespace SD.Yuzu
         public string MainWindow_AddTab => GetString("MainWindow_AddTab");
         public string MainWindow_AddNewTab => GetString("MainWindow_AddNewTab");
         public string MainWindow_Duplicate => GetString("MainWindow_Duplicate");
+        public string MainWindow_RenameTab => GetString("MainWindow_RenameTab");
         public string MainWindow_ExportImages => GetString("MainWindow_ExportImages");
         public string MainWindow_DuplicateRight => GetString("MainWindow_DuplicateRight");
         public string MainWindow_DuplicateLeft => GetString("MainWindow_DuplicateLeft");

@@ -439,14 +439,17 @@ Please specify the correct Stable Diffusion WebUI root directory.</value>
   <data name="MainWindow_Duplicate" xml:space="preserve">
     <value>Duplicate</value>
   </data>
+  <data name="MainWindow_RenameTab" xml:space="preserve">
+    <value>Rename (Double-click)</value>
+  </data>
   <data name="MainWindow_ExportImages" xml:space="preserve">
     <value>Export Images</value>
   </data>
   <data name="MainWindow_DuplicateRight" xml:space="preserve">
-    <value>Duplicate Right</value>
+    <value>Duplicate Right (Ctrl+R)</value>
   </data>
   <data name="MainWindow_DuplicateLeft" xml:space="preserve">
-    <value>Duplicate Left</value>
+    <value>Duplicate Left (Ctrl+Shift+R)</value>
   </data>
   <data name="MainWindow_PortraitTooltip" xml:space="preserve">
     <value>Set portrait dimensions</value>

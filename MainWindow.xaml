@@ -466,6 +466,16 @@
             <TabControl.Resources>
                 <local:OptimizedImageConverter x:Key="OptimizedImageConverter"/>
                 <Style TargetType="TabItem">
+                    <Setter Property="Width">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource OuterActiveTabWidthConverter}">
+                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="ActualWidth"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="Items.Count"/>
+                                <Binding RelativeSource="{RelativeSource Self}" Path="IsSelected"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
@@ -477,9 +487,16 @@
                                         Margin="0,1,1,0" 
                                         Padding="8,6,6,6"
                                         MinWidth="60">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Duplicate}" Click="DuplicateTabMenuItem_Click" />
+                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ExportImages}" Click="ExportImagesMenuItem_Click" />
+                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RenameTab}" Click="RenameTabMenuItem_Click" />
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
                                     <ContentPresenter x:Name="ContentSite"
                                                       VerticalAlignment="Center"
-                                                      HorizontalAlignment="Left"
+                                                      HorizontalAlignment="Stretch"
                                                       ContentSource="Header"
                                                       Margin="0,0,0,0"/>
                                 </Border>
@@ -506,35 +523,40 @@
                     <Setter Property="HeaderTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="2,0,0,0"
-                                            PreviewMouseLeftButtonDown="OuterTabHeader_PreviewMouseLeftButtonDown">
-                                    <!-- コンテキストメニューを追加 -->
-                                    <StackPanel.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Duplicate}" Click="DuplicateTabMenuItem_Click" />
-                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ExportImages}" Click="ExportImagesMenuItem_Click" />
-                                        </ContextMenu>
-                                    </StackPanel.ContextMenu>
-                                    <!-- 通常表示用のTextBlock -->
-                                    <TextBlock x:Name="TitleTextBlock" 
-                                               Text="{Binding Title}" 
-                                               MinWidth="30" 
-                                               VerticalAlignment="Center"
-                                               FontSize="13"
-                                               FontWeight="Medium"
-                                               Foreground="#333333"
-                                               MouseLeftButtonDown="TitleTextBlock_MouseLeftButtonDown"/>
-                                    <!-- 編集用のTextBox（初期状態では非表示） -->
-                                    <TextBox x:Name="TitleTextBox" 
-                                             Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
-                                             MinWidth="30" 
-                                             VerticalAlignment="Center"
-                                             FontSize="13"
-                                             Visibility="Collapsed"
-                                             KeyDown="TitleTextBox_KeyDown"
-                                             LostFocus="TitleTextBox_LostFocus"/>
-                                    <!-- モダンな閉じるボタン -->
-                                    <Button Command="{Binding DataContext.RemoveTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                <Grid Margin="2,0,0,0"
+                                      PreviewMouseLeftButtonDown="OuterTabHeader_PreviewMouseLeftButtonDown">
+                                    
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- 左側：タイトル表示エリア -->
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                        <!-- 通常表示用のTextBlock -->
+                                        <TextBlock x:Name="TitleTextBlock" 
+                                                   Text="{Binding Title}" 
+                                                   MinWidth="30" 
+                                                   VerticalAlignment="Center"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="#333333"
+                                                   MouseLeftButtonDown="TitleTextBlock_MouseLeftButtonDown"/>
+                                        <!-- 編集用のTextBox（初期状態では非表示） -->
+                                        <TextBox x:Name="TitleTextBox" 
+                                                 Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
+                                                 MinWidth="30" 
+                                                 VerticalAlignment="Center"
+                                                 FontSize="13"
+                                                 Visibility="Collapsed"
+                                                 KeyDown="TitleTextBox_KeyDown"
+                                                 LostFocus="TitleTextBox_LostFocus"/>
+                                    </StackPanel>
+                                    
+                                    <!-- 右側：閉じるボタン -->
+                                    <Button Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            Command="{Binding DataContext.RemoveTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
                                             CommandParameter="{Binding}" 
                                             Margin="5,0,0,0" 
                                             Width="18" 
@@ -543,6 +565,12 @@
                                             BorderThickness="0"
                                             Cursor="Hand"
                                             ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_CloseTab}">
+                                        <Button.Visibility>
+                                            <MultiBinding Converter="{StaticResource OuterTabCloseButtonVisibilityConverter}">
+                                                <Binding Path="IsGenerating"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="IsSelected"/>
+                                            </MultiBinding>
+                                        </Button.Visibility>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border x:Name="ButtonBorder" 
@@ -569,7 +597,7 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
-                                </StackPanel>
+                                </Grid>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -689,6 +717,7 @@
                                                             <MultiBinding Converter="{StaticResource ActiveTabCloseButtonVisibilityConverter}">
                                                                 <Binding Path="IsGenerating"/>
                                                                 <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="IsSelected"/>
+                                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="ActualWidth"/>
                                                             </MultiBinding>
                                                         </Button.Visibility>
                                                         <Button.Template>

@@ -2617,6 +2617,75 @@ namespace SD.Yuzu
             if (string.IsNullOrEmpty(text) || caretPosition < 0 || caretPosition > text.Length)
                 return null;
 
+            // 1. まず、括弧内かどうかをチェックする
+            bool isInsideBrackets = false;
+            int openBracketPos = -1;
+            int closeBracketPos = -1;
+
+            // 括弧内にいるかどうかをチェック
+            for (int i = caretPosition; i >= 0; i--)
+            {
+                if (text[i] == '(')
+                {
+                    // エスケープされた括弧かチェック
+                    if (i > 0 && text[i - 1] == '\\')
+                    {
+                        continue;
+                    }
+                    openBracketPos = i;
+                    break;
+                }
+                else if (text[i] == ')')
+                {
+                    // すでに閉じ括弧を見つけた場合は括弧外
+                    break;
+                }
+            }
+
+            if (openBracketPos >= 0)
+            {
+                // 開き括弧が見つかったら、対応する閉じ括弧を探す
+                int depth = 1;
+                for (int i = openBracketPos + 1; i < text.Length; i++)
+                {
+                    if (text[i] == '(')
+                    {
+                        // エスケープされた括弧かチェック
+                        if (i > 0 && text[i - 1] == '\\')
+                        {
+                            continue;
+                        }
+                        depth++;
+                    }
+                    else if (text[i] == ')')
+                    {
+                        // エスケープされた括弧かチェック
+                        if (i > 0 && text[i - 1] == '\\')
+                        {
+                            continue;
+                        }
+                        depth--;
+                        if (depth == 0)
+                        {
+                            closeBracketPos = i;
+                            break;
+                        }
+                    }
+                }
+
+                // キャレットが括弧内にあるかチェック
+                if (closeBracketPos >= 0 && caretPosition > openBracketPos && caretPosition <= closeBracketPos)
+                {
+                    isInsideBrackets = true;
+                }
+            }
+
+            // 2. 括弧内にいる場合は、括弧全体を返す
+            if (isInsideBrackets && openBracketPos >= 0 && closeBracketPos >= 0)
+            {
+                return (openBracketPos, closeBracketPos - openBracketPos + 1);
+            }
+
             // まず、LoRAタグ（<...>）の内部にいるかどうかをチェック
             var loraTagBounds = FindLoRATagBounds(text, caretPosition);
             if (loraTagBounds.HasValue)
@@ -2625,37 +2694,88 @@ namespace SD.Yuzu
                 return loraTagBounds;
             }
 
-            // キャレット位置から左方向にカンマまたは文字列開始を探す
+            // 3. それ以外の場合は、カンマ区切りの部分を探す（ただし括弧内は考慮する）
             int start = caretPosition;
+            int bracketDepth = 0;
+            
+            // キャレット位置から左方向にカンマまたは文字列開始を探す
             while (start > 0)
             {
-                if (text[start - 1] == ',')
+                char c = text[start - 1];
+                
+                if (c == ')')
                 {
-                    // カンマの直後の位置
+                    // エスケープされた括弧かチェック
+                    if (start > 1 && text[start - 2] == '\\')
+                    {
+                        start--;
+                        continue;
+                    }
+                    bracketDepth++;
+                }
+                else if (c == '(')
+                {
+                    // エスケープされた括弧かチェック
+                    if (start > 1 && text[start - 2] == '\\')
+                    {
+                        start--;
+                        continue;
+                    }
+                    bracketDepth--;
+                }
+                else if (c == ',' && bracketDepth == 0)
+                {
+                    // 括弧の外側でカンマを見つけた場合は境界とする
                     break;
                 }
-                else if (text[start - 1] == '\n' || text[start - 1] == '\r')
+                else if ((c == '\n' || c == '\r') && bracketDepth == 0)
                 {
-                    // 改行で区切られている場合も境界とする
+                    // 括弧の外側で改行を見つけた場合も境界とする
                     break;
                 }
+                
                 start--;
             }
 
             // キャレット位置から右方向にカンマまたは文字列終端を探す
             int end = caretPosition;
+            bracketDepth = 0;
+            
             while (end < text.Length)
             {
-                if (text[end] == ',')
+                char c = text[end];
+                
+                if (c == '(')
                 {
-                    // カンマの直前の位置
+                    // エスケープされた括弧かチェック
+                    if (end > 0 && text[end - 1] == '\\')
+                    {
+                        end++;
+                        continue;
+                    }
+                    bracketDepth++;
+                }
+                else if (c == ')')
+                {
+                    // エスケープされた括弧かチェック
+                    if (end > 0 && text[end - 1] == '\\')
+                    {
+                        end++;
+                        continue;
+                    }
+                    bracketDepth--;
+                }
+                else if (c == ',' && bracketDepth == 0)
+                {
+                    // 括弧の外側でカンマを見つけた場合は境界とする
                     break;
                 }
-                else if (text[end] == '\n' || text[end] == '\r')
+                else if ((c == '\n' || c == '\r') && bracketDepth == 0)
                 {
-                    // 改行で区切られている場合も境界とする
+                    // 括弧の外側で改行を見つけた場合も境界とする
                     break;
                 }
+                
                 end++;
             }
 
@@ -2814,6 +2934,26 @@ namespace SD.Yuzu
                 int caretPosition = GetTextEditorCaretPosition();
                 
                 var bounds = FindCommaDelimitedBounds(text, caretPosition);
+                if (!bounds.HasValue && caretPosition > 0 &&
+                    (text[caretPosition - 1] == ',' || text[caretPosition - 1] == ' ' || text[caretPosition - 1] == '\t'))
+                {
+                    int checkPos = caretPosition;
+                    while (checkPos < text.Length && (text[checkPos] == ' ' || text[checkPos] == '\t'))
+                    {
+                        checkPos++;
+                    }
+
+                    if (checkPos >= text.Length || text[checkPos] == '\n' || text[checkPos] == '\r')
+                    {
+                        int newPos = caretPosition - 1;
+                        while (newPos > 0 && (text[newPos] == ' ' || text[newPos] == '\t'))
+                        {
+                            newPos--;
+                        }
+
+                        bounds = FindCommaDelimitedBounds(text, Math.Max(0, newPos));
+                    }
+                }
                 if (bounds.HasValue)
                 {
                     int deleteStart = bounds.Value.start;

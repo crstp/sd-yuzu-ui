@@ -201,7 +201,7 @@ namespace SD.Yuzu
                         {
                             var tag = new TagItem
                             {
-                                Name = parts[0],
+                                Name = EscapeParentheses(parts[0]),
                                 Count = count
                             };
                             
@@ -223,9 +223,9 @@ namespace SD.Yuzu
                                     {
                                         var aliasTag = new TagItem
                                         { 
-                                            Name = alias, 
+                                            Name = EscapeParentheses(alias), 
                                             Count = count,
-                                            AliasSource = parts[0] // 元のタグ名を設定
+                                            AliasSource = EscapeParentheses(parts[0]) // 元のタグ名を設定
                                         };
                                         tags.Add(aliasTag);
                                         aliasCount++;
@@ -247,6 +247,17 @@ namespace SD.Yuzu
                 Debug.WriteLine($"TagDataManager: タグファイル読み込みエラー: {ex.Message}");
                 _allTags = new List<TagItem>();
             }
+        }
+        
+        /// <summary>
+        /// 括弧（とじ括弧）をエスケープする
+        /// </summary>
+        private string EscapeParentheses(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text;
+                
+            return text.Replace("(", "\\(").Replace(")", "\\)");
         }
         
         /// <summary>

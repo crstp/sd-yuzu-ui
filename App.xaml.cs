@@ -22,7 +22,7 @@ namespace SD.Yuzu
         private static string GetMutexName()
         {
             // 実行ファイルのフルパスを取得してMutex名として使用
-            string exePath = Environment.ProcessPath;
+            string exePath = Environment.ProcessPath ?? Assembly.GetExecutingAssembly().Location;
             // パス区切り文字をアンダースコアに置換してMutex名として有効にする
             return "SDYuzu_" + exePath.Replace('\\', '_').Replace(':', '_').Replace('/', '_');
         }
@@ -42,7 +42,7 @@ namespace SD.Yuzu
         protected override void OnStartup(StartupEventArgs e)
         {
             // 実行ファイルの場所をカレントディレクトリに設定
-            string executableDirectory = Path.GetDirectoryName(Environment.ProcessPath);
+            string? executableDirectory = Path.GetDirectoryName(Environment.ProcessPath ?? Assembly.GetExecutingAssembly().Location);
             if (!string.IsNullOrEmpty(executableDirectory))
             {
                 Directory.SetCurrentDirectory(executableDirectory);

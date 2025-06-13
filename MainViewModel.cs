@@ -1250,6 +1250,14 @@ namespace SD.Yuzu
         }
 
         /// <summary>
+        /// 閉じたタブのスタックを取得（画像クリーンアップ処理用）
+        /// </summary>
+        public IEnumerable<ClosedTabInfo> GetClosedTabsStack()
+        {
+            return _closedTabsStack.ToArray();
+        }
+
+        /// <summary>
         /// Random Resolution設定が外部から変更された際に呼び出すメソッド
         /// </summary>
         public void RefreshRandomResolutionText()

@@ -1500,7 +1500,10 @@ namespace SD.Yuzu
         /// </summary>
         private static T? FindVisualChild<T>(DependencyObject parent, string childName) where T : FrameworkElement
         {
-            if (parent == null) return null;
+            if (parent is null)
+            {
+                return null;
+            }
 
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
@@ -1581,7 +1584,7 @@ namespace SD.Yuzu
                 return new System.Windows.Controls.ValidationResult(false, "値が必要です");
             }
 
-            string input = value.ToString();
+            string? input = value.ToString();
             
             // 空文字列は一時的に許可（入力中の可能性）
             if (string.IsNullOrWhiteSpace(input))
