@@ -1,0 +1,1 @@
+dotnet test Tests/SD.Yuzu.Tests.csproj
