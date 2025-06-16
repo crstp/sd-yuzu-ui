@@ -31,5 +31,20 @@ namespace SD.Yuzu.Tests
             // Assert
             Assert.Equal("Hello, Yuzu!", result);
         }
+
+        [Fact]
+        public void DeleteCommaDelimitedSectionCore_NormalCase_RemovesMiddleTag()
+        {
+            // Arrange
+            string text = "a, b, c";
+            int caret = 4; // 'b'の上
+
+            // Act
+            var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
+
+            // Assert
+            Assert.Equal("a, c", result);
+            Assert.Equal(3, newCaret); // 'a,'の後
+        }
     }
 } 
