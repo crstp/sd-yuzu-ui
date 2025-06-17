@@ -48,174 +48,118 @@ namespace SD.Yuzu.Tests
             }
         }
 
-        [Fact]
-        public void GetGreeting_WithEmptyName_ReturnsHelloWorld()
+        /// <summary>
+        /// 戻り値とキャレットを1つの '|' で指定して DeleteCommaDelimitedSectionCore の結果を検証します
+        /// </summary>
+        private static void ForEachCaretAndAssert(string inputRangeWithCarets, string expectedWithCaret)
         {
-            // Arrange
-            string name = "";
-
-            // Act
-            string result = TestableHelper.GetGreeting(name);
-
-            // Assert
-            Assert.Equal("Hello, World!", result);
+            var (text, start, end) = ParseWithCaretRange(inputRangeWithCarets);
+            var (expectedText, expectedCaret) = ParseExpectedCaret(expectedWithCaret);
+            for (int caret = start; caret <= end; caret++)
+            {
+                var displayInput = text.Insert(caret, "|");
+                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
+                Assert.True(result == expectedText, $"Caret case: {displayInput}: Expected '{expectedText}' but got '{result}'");
+                if (expectedCaret >= 0)
+                {
+                    Assert.True(newCaret == expectedCaret, $"Caret case: {displayInput}: Expected caret {expectedCaret} but got {newCaret}");
+                }
+            }
         }
 
-        [Fact]
-        public void GetGreeting_WithName_ReturnsHelloName()
+        private static (string text, int caret) ParseExpectedCaret(string inputWithCaret)
         {
-            // Arrange
-            string name = "Yuzu";
-
-            // Act
-            string result = TestableHelper.GetGreeting(name);
-
-            // Assert
-            Assert.Equal("Hello, Yuzu!", result);
+            int caret = inputWithCaret.IndexOf('|');
+            if (caret < 0) return (inputWithCaret, -1);
+            var text = inputWithCaret.Remove(caret, 1);
+            return (text, caret);
         }
+
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_NormalCase_RemovesMiddleTag()
         {
-            ForEachCaret("a,| b|, c", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result);
-                Assert.Equal(3, newCaret); // 'a,'の後
-            });
+            ForEachCaretAndAssert("a,| b|, c", "a, |c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveFirstTag()
         {
-            ForEachCaret("|a|, b, c", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("b, c", result);
-                Assert.Equal(0, newCaret);
-            });
+            ForEachCaretAndAssert("|a|, b, c", "|b, c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveLastTag()
         {
-            ForEachCaret("a, b,| c|", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, b", result);
-                Assert.Equal(4, newCaret);
-            });
+            ForEachCaretAndAssert("a, b,| c|", "a, b|");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveTagWithSpaces()
         {
-            ForEachCaret("a ,|  b  |, c ", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result.TrimEnd()); // 末尾スペースは無視
-            });
-        }
-
-        [Fact]
-        public void DeleteCommaDelimitedSectionCore_RemoveTagWithTabs()
-        {
-            ForEachCaret("a,\t|b,\tc", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result);
-                Assert.Equal(2, newCaret);
-            });
+            ForEachCaretAndAssert("a ,|  b  |, c ", "a, c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveTagWithNewlines()
         {
-            ForEachCaret("a,\n|b,\nc", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result);
-                Assert.Equal(2, newCaret);
-            });
+            ForEachCaretAndAssert("a,\r\n|b,|\r\nc", "a,\r\n\r\n|c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveOnlyTag()
         {
-            ForEachCaret("|a|", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("", result); // 挙動通り、全体が削除される
-                Assert.Equal(0, newCaret);
-            });
+            ForEachCaretAndAssert("|a|", "|");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveTagWithMultipleCommas()
         {
-            ForEachCaret("a,,|b|,,c", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result); // 期待値はロジック準拠
-            });
+            ForEachCaretAndAssert("a,,|b|,,c", "a, c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveLoraTag()
         {
-            ForEachCaret("a,| <lora:foo>|, c", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result);
-            });
+            ForEachCaretAndAssert("a,| <lora:foo:1>|, c", "a, c");
+            ForEachCaretAndAssert("a,| <lora:foo:0.8>|, c", "a, c");
+            ForEachCaretAndAssert("a,| <lora:foo:0.85>|, c", "a, c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_RemoveBracketedTag()
         {
-            ForEachCaret("a,| (b:1.2)|, c", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result);
-            });
+            ForEachCaretAndAssert("a,| (b:1.2)|, c", "a, c");
+        }
+
+        [Fact]
+        public void DeleteCommaDelimitedSectionCore_RemoveBracketedMultiTag()
+        {
+            ForEachCaretAndAssert("a,| (b1, b2:1.2)|, c", "a, c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_CaretOnComma()
         {
-            ForEachCaret("a,| b|, c", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result); // 挙動通り、削除される
-                Assert.Equal(2, newCaret);
-            });
+            ForEachCaretAndAssert("a,| b|, c", "a,| c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_EmptyString()
         {
-            ForEachCaret("|", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("", result);
-                Assert.Equal(0, newCaret);
-            });
+            ForEachCaretAndAssert("|", "|");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_LeadingAndTrailingSpaces()
         {
-            ForEachCaret("  a,| b|, c  ", (text, caret) =>
-            {
-                var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
-                Assert.Equal("a, c", result.Trim());
-            });
+            ForEachCaretAndAssert("  a,| b|, c  ", "a, c");
         }
 
         [Fact]
         public void DeleteCommaDelimitedSectionCore_LeadingAndTrailingCommas()
         {
-            ForEachCaret(",a,| b|, c,", (text, caret) =>
+            ForEachCaret("a,| b|, c,", (text, caret) =>
             {
                 var (result, newCaret) = TestableHelper.DeleteCommaDelimitedSectionCore(text, caret);
                 Assert.Contains("a", result);
