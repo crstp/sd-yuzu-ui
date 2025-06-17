@@ -30,581 +30,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <local:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
 
-        
-        <!-- 細いスクロールバーのスタイル -->
-        <Style x:Key="ThinScrollBarStyle" TargetType="ScrollBar">
-            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
-            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Width" Value="8"/>
-            <Setter Property="MinWidth" Value="8"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ScrollBar">
-                        <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="0.00001*"/>
-                            </Grid.RowDefinitions>
-                            <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="True" Focusable="false">
-                                <Track.Thumb>
-                                    <Thumb x:Name="Thumb" Background="#C0C0C0" BorderBrush="Transparent" Width="6">
-                                        <Thumb.Template>
-                                            <ControlTemplate TargetType="Thumb">
-                                                <Border x:Name="ThumbBorder" 
-                                                        Background="{TemplateBinding Background}" 
-                                                        BorderBrush="{TemplateBinding BorderBrush}" 
-                                                        BorderThickness="0" 
-                                                        CornerRadius="3"
-                                                        Margin="1,0,1,0"/>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="#808080"/>
-                                                    </Trigger>
-                                                    <Trigger Property="IsDragging" Value="True">
-                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="#606060"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Thumb.Template>
-                                    </Thumb>
-                                </Track.Thumb>
-                                <Track.IncreaseRepeatButton>
-                                    <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false"/>
-                                </Track.IncreaseRepeatButton>
-                                <Track.DecreaseRepeatButton>
-                                    <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false"/>
-                                </Track.DecreaseRepeatButton>
-                            </Track>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="Orientation" Value="Horizontal">
-                    <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="MinWidth" Value="0"/>
-                    <Setter Property="Height" Value="8"/>
-                    <Setter Property="MinHeight" Value="8"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ScrollBar">
-                                <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="0.00001*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Track x:Name="PART_Track" Grid.Column="0" IsDirectionReversed="False" Focusable="false">
-                                        <Track.Thumb>
-                                            <Thumb x:Name="Thumb" Background="#C0C0C0" BorderBrush="Transparent" Height="6">
-                                                <Thumb.Template>
-                                                    <ControlTemplate TargetType="Thumb">
-                                                        <Border x:Name="ThumbBorder" 
-                                                                Background="{TemplateBinding Background}" 
-                                                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                                                BorderThickness="0" 
-                                                                CornerRadius="3"
-                                                                Margin="0,1,0,1"/>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="ThumbBorder" Property="Background" Value="#808080"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsDragging" Value="True">
-                                                                <Setter TargetName="ThumbBorder" Property="Background" Value="#606060"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Thumb.Template>
-                                            </Thumb>
-                                        </Track.Thumb>
-                                        <Track.IncreaseRepeatButton>
-                                            <RepeatButton x:Name="PageLeft" Command="ScrollBar.PageLeftCommand" Opacity="0" Focusable="false"/>
-                                        </Track.IncreaseRepeatButton>
-                                        <Track.DecreaseRepeatButton>
-                                            <RepeatButton x:Name="PageRight" Command="ScrollBar.PageRightCommand" Opacity="0" Focusable="false"/>
-                                        </Track.DecreaseRepeatButton>
-                                    </Track>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        
-        <!-- 細いスクロールバー用のScrollViewerスタイル -->
-        <Style x:Key="ThinScrollViewerStyle" TargetType="ScrollViewer">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ScrollViewer">
-                        <Grid x:Name="Grid" Background="{TemplateBinding Background}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
-                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
-                            <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Style="{StaticResource ThinScrollBarStyle}"/>
-                            <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Style="{StaticResource ThinScrollBarStyle}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <!-- 細いスクロールバー用のListBoxスタイル -->
-        <Style x:Key="ThinScrollBarListBoxStyle" TargetType="ListBox">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBox">
-                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Style="{StaticResource ThinScrollViewerStyle}">
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                            </ScrollViewer>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsGrouping" Value="true"/>
-                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <!-- モダンなComboBoxスタイル -->
-        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#D1D1D1"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="#2C2C2C"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="Height" Value="25"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid>
-                            <ToggleButton x:Name="ToggleButton" 
-                                          Grid.Column="2" 
-                                          Background="{TemplateBinding Background}"
-                                          BorderBrush="{TemplateBinding BorderBrush}"
-                                          BorderThickness="{TemplateBinding BorderThickness}"
-                                          Focusable="False"
-                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <Border x:Name="border"
-                                                Background="{TemplateBinding Background}"
-                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                BorderThickness="{TemplateBinding BorderThickness}"
-                                                CornerRadius="4">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="20"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Path x:Name="Arrow"
-                                                      Grid.Column="1"
-                                                      Fill="#666666"
-                                                      HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center"
-                                                      Data="M 0 0 L 4 4 L 8 0 Z"/>
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="border" Property="Background" Value="#F8F8F8"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
-                                                <Setter TargetName="Arrow" Property="Fill" Value="#2196F3"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter TargetName="border" Property="Background" Value="#F0F0F0"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="#1976D2"/>
-                                                <Setter TargetName="Arrow" Property="Fill" Value="#1976D2"/>
-                                            </Trigger>
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter TargetName="border" Property="Background" Value="#F5F5F5"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="#E0E0E0"/>
-                                                <Setter TargetName="Arrow" Property="Fill" Value="#9E9E9E"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                            </ToggleButton>
-                            <ContentPresenter x:Name="ContentSite"
-                                              IsHitTestVisible="False"
-                                              Content="{TemplateBinding SelectionBoxItem}"
-                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Left"/>
-                            <TextBox x:Name="PART_EditableTextBox"
-                                     Style="{x:Null}"
-                                     Background="Transparent"
-                                     BorderThickness="0"
-                                     Focusable="True"
-                                     IsReadOnly="{TemplateBinding IsReadOnly}"
-                                     Margin="{TemplateBinding Padding}"
-                                     VerticalAlignment="Center"
-                                     Visibility="Hidden"/>
-                            <Popup x:Name="Popup"
-                                   Placement="Bottom"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}"
-                                   AllowsTransparency="True"
-                                   Focusable="False"
-                                   PopupAnimation="Slide">
-                                <Grid x:Name="DropDown"
-                                      SnapsToDevicePixels="True"
-                                      MinWidth="{TemplateBinding ActualWidth}"
-                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border x:Name="DropDownBorder"
-                                            Background="#FFFFFF"
-                                            BorderBrush="#D1D1D1"
-                                            BorderThickness="1"
-                                            CornerRadius="4"
-                                            Margin="0,1,0,0">
-                                        <Border.Effect>
-                                            <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" Opacity="0.15" BlurRadius="4"/>
-                                        </Border.Effect>
-                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
-                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
-                                        </ScrollViewer>
-                                    </Border>
-                                </Grid>
-                            </Popup>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="HasItems" Value="false">
-                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
-                            </Trigger>
-                            <Trigger Property="IsGrouping" Value="true">
-                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
-                            </Trigger>
-                            <Trigger Property="IsEditable" Value="true">
-                                <Setter Property="IsTabStop" Value="false"/>
-                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
-                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <!-- モダンなComboBoxItemスタイル -->
-        <Style x:Key="ModernComboBoxItemStyle" TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBoxItem">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
-                                <Setter Property="Foreground" Value="#1976D2"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="#9E9E9E"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
-    <Grid>
-        <!-- メモリ監視パネル（右上） -->
-        <StackPanel x:Name="MemoryMonitorPanel" 
-                    HorizontalAlignment="Right" 
-                    VerticalAlignment="Top" 
-                    Margin="10,10,10,10"
-                    Visibility="Collapsed"
-                    Panel.ZIndex="1000">
-            <TextBlock x:Name="MemoryUsageLabel" 
-                       Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_MemoryUsage}"
-                       FontSize="12"
-                       FontWeight="Bold"
-                       Foreground="Red"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,5"/>
-            <Button x:Name="RestartButton"
-                    Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Restart}"
-                    Background="Yellow"
-                    Foreground="Black"
-                    FontWeight="Bold"
-                    Padding="10,5,10,5"
-                    BorderBrush="Orange"
-                    BorderThickness="2"
-                    Click="RestartButton_Click"
-                    ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RestartTooltip}"/>
-        </StackPanel>
-        
-        <!-- バージョンチェックパネル（右上、メモリモニターの下） -->
-        <StackPanel x:Name="VersionCheckPanel" 
-                    HorizontalAlignment="Right" 
-                    VerticalAlignment="Top" 
-                    Margin="10,10,10,10"
-                    Visibility="Collapsed"
-                    Panel.ZIndex="1000">
-            <!-- 統合されたボタンコントロール -->
-            <Border Background="LightBlue"
-                    BorderBrush="Blue"
-                    BorderThickness="2"
-                    CornerRadius="4">
-                <StackPanel Orientation="Horizontal" 
-                           Margin="0">
-                    <!-- メインのバージョンボタン -->
-                    <Button x:Name="NewVersionButton"
-                            Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_NewVersionAvailable}"
-                            Background="Transparent"
-                            Foreground="DarkBlue"
-                            FontWeight="Bold"
-                            Padding="10,5,5,5"
-                            BorderThickness="0"
-                            Click="NewVersionButton_Click"
-                            ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_NewVersionTooltip}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#E0F0FF"/>
-                                                </Trigger>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Background" Value="#C0E0FF"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                    
-                    <!-- 区切り線 -->
-                    <Rectangle Width="1" 
-                              Fill="Blue" 
-                              Margin="0,3,0,3"/>
-                    
-                    <!-- 閉じるボタン -->
-                    <Button x:Name="CloseVersionButton"
-                            Width="20"
-                            Height="20"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Padding="0"
-                            Margin="0"
-                            Click="CloseVersionButton_Click"
-                            ToolTip="閉じる">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="0,2,2,0">
-                                                <Path x:Name="ClosePath"
-                                                      Data="M3,3 L13,13 M13,3 L3,13" 
-                                                      Stroke="DarkBlue" 
-                                                      StrokeThickness="1.5"
-                                                      HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#FFE0E0"/>
-                                                    <Setter TargetName="ClosePath" Property="Stroke" Value="Red"/>
-                                                </Trigger>
-                                                <Trigger Property="IsPressed" Value="True">
-                                                    <Setter Property="Background" Value="#FFC0C0"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-        
-        <TabControl x:Name="MainTabControl" ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}" AllowDrop="True" PreviewMouseMove="TabControl_PreviewMouseMove" DragOver="TabControl_DragOver" Drop="TabControl_Drop"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TabControl.Resources>
-                <local:OptimizedImageConverter x:Key="OptimizedImageConverter"/>
-                <Style TargetType="TabItem">
-                    <Setter Property="Width">
-                        <Setter.Value>
-                            <MultiBinding Converter="{StaticResource OuterActiveTabWidthConverter}">
-                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="ActualWidth"/>
-                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="Items.Count"/>
-                                <Binding RelativeSource="{RelativeSource Self}" Path="IsSelected"/>
-                            </MultiBinding>
-                        </Setter.Value>
-                    </Setter>
-
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="TabItem">
-                                <Border x:Name="Border" 
-                                        Background="#F8F8F8" 
-                                        BorderBrush="#E0E0E0" 
-                                        BorderThickness="1,1,1,0" 
-                                        CornerRadius="6,6,0,0" 
-                                        Margin="0,1,1,0" 
-                                        Padding="8,6,6,6"
-                                        MinWidth="60">
-                                    <Border.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Duplicate}" Click="DuplicateTabMenuItem_Click" />
-                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ExportImages}" Click="ExportImagesMenuItem_Click" />
-                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RenameTab}" Click="RenameTabMenuItem_Click" />
-                                        </ContextMenu>
-                                    </Border.ContextMenu>
-                                    <ContentPresenter x:Name="ContentSite"
-                                                      VerticalAlignment="Center"
-                                                      HorizontalAlignment="Stretch"
-                                                      ContentSource="Header"
-                                                      Margin="0,0,0,0"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="#FFFFFF"/>
-                                        <Setter TargetName="Border" Property="BorderBrush" Value="#4A90E2"/>
-                                        <Setter TargetName="Border" Property="BorderThickness" Value="1,2,1,0"/>
-                                    </Trigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="#F0F0F0"/>
-                                    </Trigger>
-                                    <MultiTrigger>
-                                        <MultiTrigger.Conditions>
-                                            <Condition Property="IsSelected" Value="True"/>
-                                            <Condition Property="IsMouseOver" Value="True"/>
-                                        </MultiTrigger.Conditions>
-                                        <Setter TargetName="Border" Property="Background" Value="#FFFFFF"/>
-                                    </MultiTrigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="HeaderTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Grid Margin="2,0,0,0"
-                                      PreviewMouseLeftButtonDown="OuterTabHeader_PreviewMouseLeftButtonDown">
-                                    
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <!-- 左側：タイトル表示エリア -->
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                        <!-- 通常表示用のTextBlock -->
-                                        <TextBlock x:Name="TitleTextBlock" 
-                                                   Text="{Binding Title}" 
-                                                   MinWidth="30" 
-                                                   VerticalAlignment="Center"
-                                                   FontSize="13"
-                                                   FontWeight="Medium"
-                                                   Foreground="#333333"
-                                                   MouseLeftButtonDown="TitleTextBlock_MouseLeftButtonDown"/>
-                                        <!-- 編集用のTextBox（初期状態では非表示） -->
-                                        <TextBox x:Name="TitleTextBox" 
-                                                 Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
-                                                 MinWidth="30" 
-                                                 VerticalAlignment="Center"
-                                                 FontSize="13"
-                                                 Visibility="Collapsed"
-                                                 KeyDown="TitleTextBox_KeyDown"
-                                                 LostFocus="TitleTextBox_LostFocus"/>
-                                    </StackPanel>
-                                    
-                                    <!-- 右側：閉じるボタン -->
-                                    <Button Grid.Column="1"
-                                            HorizontalAlignment="Right"
-                                            Command="{Binding DataContext.RemoveTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                            CommandParameter="{Binding}" 
-                                            Margin="5,0,0,0" 
-                                            Width="18" 
-                                            Height="18"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
-                                            ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_CloseTab}">
-                                        <Button.Visibility>
-                                            <MultiBinding Converter="{StaticResource OuterTabCloseButtonVisibilityConverter}">
-                                                <Binding Path="IsGenerating"/>
-                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="IsSelected"/>
-                                            </MultiBinding>
-                                        </Button.Visibility>
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="ButtonBorder" 
-                                                        Background="Transparent" 
-                                                        CornerRadius="9"
-                                                        Width="18" 
-                                                        Height="18">
-                                                    <Path x:Name="ClosePath"
-                                                          Data="M1,1 L9,9 M9,1 L1,9" 
-                                                          Stroke="#999999" 
-                                                          StrokeThickness="1.2"
-                                                          HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#E81123"/>
-                                                        <Setter TargetName="ClosePath" Property="Stroke" Value="White"/>
-                                                    </Trigger>
-                                                    <Trigger Property="IsPressed" Value="True">
-                                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#C50E1F"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                </Grid>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </TabControl.Resources>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
+                <DataTemplate x:Key="OuterTabContentTemplate">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -798,7 +224,6 @@
                                                 </Button.Template>
                                             </Button>
                                         </StackPanel>
-                                        <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Grid.Row="1" Margin="0"/>
                                     </Grid>
                                 </ControlTemplate>
                             </TabControl.Template>
@@ -1904,7 +1329,579 @@
                         </TabControl>
                     </Grid>
                 </DataTemplate>
-            </TabControl.ContentTemplate>
+        
+        <!-- 細いスクロールバーのスタイル -->
+        <Style x:Key="ThinScrollBarStyle" TargetType="ScrollBar">
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="MinWidth" Value="8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.00001*"/>
+                            </Grid.RowDefinitions>
+                            <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="True" Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Background="#C0C0C0" BorderBrush="Transparent" Width="6">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="ThumbBorder" 
+                                                        Background="{TemplateBinding Background}" 
+                                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                                        BorderThickness="0" 
+                                                        CornerRadius="3"
+                                                        Margin="1,0,1,0"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="#808080"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="#606060"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="Height" Value="8"/>
+                    <Setter Property="MinHeight" Value="8"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.00001*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Track x:Name="PART_Track" Grid.Column="0" IsDirectionReversed="False" Focusable="false">
+                                        <Track.Thumb>
+                                            <Thumb x:Name="Thumb" Background="#C0C0C0" BorderBrush="Transparent" Height="6">
+                                                <Thumb.Template>
+                                                    <ControlTemplate TargetType="Thumb">
+                                                        <Border x:Name="ThumbBorder" 
+                                                                Background="{TemplateBinding Background}" 
+                                                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                                                BorderThickness="0" 
+                                                                CornerRadius="3"
+                                                                Margin="0,1,0,1"/>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="ThumbBorder" Property="Background" Value="#808080"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsDragging" Value="True">
+                                                                <Setter TargetName="ThumbBorder" Property="Background" Value="#606060"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Thumb.Template>
+                                            </Thumb>
+                                        </Track.Thumb>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton x:Name="PageLeft" Command="ScrollBar.PageLeftCommand" Opacity="0" Focusable="false"/>
+                                        </Track.IncreaseRepeatButton>
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton x:Name="PageRight" Command="ScrollBar.PageRightCommand" Opacity="0" Focusable="false"/>
+                                        </Track.DecreaseRepeatButton>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- 細いスクロールバー用のScrollViewerスタイル -->
+        <Style x:Key="ThinScrollViewerStyle" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Style="{StaticResource ThinScrollBarStyle}"/>
+                            <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Style="{StaticResource ThinScrollBarStyle}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 細いスクロールバー用のListBoxスタイル -->
+        <Style x:Key="ThinScrollBarListBoxStyle" TargetType="ListBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Style="{StaticResource ThinScrollViewerStyle}">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsGrouping" Value="true"/>
+                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- モダンなComboBoxスタイル -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#D1D1D1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#2C2C2C"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                          Grid.Column="2" 
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          Focusable="False"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="20"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Path x:Name="Arrow"
+                                                      Grid.Column="1"
+                                                      Fill="#666666"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#F8F8F8"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#2196F3"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#2196F3"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#F0F0F0"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#1976D2"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#1976D2"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="border" Property="Background" Value="#F5F5F5"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#E0E0E0"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#9E9E9E"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite"
+                                              IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_EditableTextBox"
+                                     Style="{x:Null}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Focusable="True"
+                                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                                     Margin="{TemplateBinding Padding}"
+                                     VerticalAlignment="Center"
+                                     Visibility="Hidden"/>
+                            <Popup x:Name="Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown"
+                                      SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder"
+                                            Background="#FFFFFF"
+                                            BorderBrush="#D1D1D1"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Margin="0,1,0,0">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" Opacity="0.15" BlurRadius="4"/>
+                                        </Border.Effect>
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- モダンなComboBoxItemスタイル -->
+        <Style x:Key="ModernComboBoxItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#BBDEFB"/>
+                                <Setter Property="Foreground" Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#9E9E9E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <!-- メモリ監視パネル（右上） -->
+        <StackPanel x:Name="MemoryMonitorPanel" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Margin="10,10,10,10"
+                    Visibility="Collapsed"
+                    Panel.ZIndex="1000">
+            <TextBlock x:Name="MemoryUsageLabel" 
+                       Text="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_MemoryUsage}"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="Red"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,5"/>
+            <Button x:Name="RestartButton"
+                    Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Restart}"
+                    Background="Yellow"
+                    Foreground="Black"
+                    FontWeight="Bold"
+                    Padding="10,5,10,5"
+                    BorderBrush="Orange"
+                    BorderThickness="2"
+                    Click="RestartButton_Click"
+                    ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RestartTooltip}"/>
+        </StackPanel>
+        
+        <!-- バージョンチェックパネル（右上、メモリモニターの下） -->
+        <StackPanel x:Name="VersionCheckPanel" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Margin="10,10,10,10"
+                    Visibility="Collapsed"
+                    Panel.ZIndex="1000">
+            <!-- 統合されたボタンコントロール -->
+            <Border Background="LightBlue"
+                    BorderBrush="Blue"
+                    BorderThickness="2"
+                    CornerRadius="4">
+                <StackPanel Orientation="Horizontal" 
+                           Margin="0">
+                    <!-- メインのバージョンボタン -->
+                    <Button x:Name="NewVersionButton"
+                            Content="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_NewVersionAvailable}"
+                            Background="Transparent"
+                            Foreground="DarkBlue"
+                            FontWeight="Bold"
+                            Padding="10,5,5,5"
+                            BorderThickness="0"
+                            Click="NewVersionButton_Click"
+                            ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_NewVersionTooltip}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#E0F0FF"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#C0E0FF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <!-- 区切り線 -->
+                    <Rectangle Width="1" 
+                              Fill="Blue" 
+                              Margin="0,3,0,3"/>
+                    
+                    <!-- 閉じるボタン -->
+                    <Button x:Name="CloseVersionButton"
+                            Width="20"
+                            Height="20"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            Margin="0"
+                            Click="CloseVersionButton_Click"
+                            ToolTip="閉じる">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="0,2,2,0">
+                                                <Path x:Name="ClosePath"
+                                                      Data="M3,3 L13,13 M13,3 L3,13" 
+                                                      Stroke="DarkBlue" 
+                                                      StrokeThickness="1.5"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#FFE0E0"/>
+                                                    <Setter TargetName="ClosePath" Property="Stroke" Value="Red"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#FFC0C0"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        
+        <TabControl x:Name="MainTabControl" ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}" AllowDrop="True" PreviewMouseMove="TabControl_PreviewMouseMove" DragOver="TabControl_DragOver" Drop="TabControl_Drop"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabControl.Resources>
+                <local:OptimizedImageConverter x:Key="OptimizedImageConverter"/>
+                <Style TargetType="TabItem">
+                    <Setter Property="Width">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource OuterActiveTabWidthConverter}">
+                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="ActualWidth"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="Items.Count"/>
+                                <Binding RelativeSource="{RelativeSource Self}" Path="IsSelected"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="Border" 
+                                        Background="#F8F8F8" 
+                                        BorderBrush="#E0E0E0" 
+                                        BorderThickness="1,1,1,0" 
+                                        CornerRadius="6,6,0,0" 
+                                        Margin="0,1,1,0" 
+                                        Padding="8,6,6,6"
+                                        MinWidth="60">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_Duplicate}" Click="DuplicateTabMenuItem_Click" />
+                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_ExportImages}" Click="ExportImagesMenuItem_Click" />
+                                            <MenuItem Header="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_RenameTab}" Click="RenameTabMenuItem_Click" />
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Stretch"
+                                                      ContentSource="Header"
+                                                      Margin="0,0,0,0"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#FFFFFF"/>
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="#4A90E2"/>
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="1,2,1,0"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#F0F0F0"/>
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="True"/>
+                                            <Condition Property="IsMouseOver" Value="True"/>
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="Border" Property="Background" Value="#FFFFFF"/>
+                                    </MultiTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Grid Margin="2,0,0,0"
+                                      PreviewMouseLeftButtonDown="OuterTabHeader_PreviewMouseLeftButtonDown">
+                                    
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- 左側：タイトル表示エリア -->
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                        <!-- 通常表示用のTextBlock -->
+                                        <TextBlock x:Name="TitleTextBlock" 
+                                                   Text="{Binding Title}" 
+                                                   MinWidth="30" 
+                                                   VerticalAlignment="Center"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="#333333"
+                                                   MouseLeftButtonDown="TitleTextBlock_MouseLeftButtonDown"/>
+                                        <!-- 編集用のTextBox（初期状態では非表示） -->
+                                        <TextBox x:Name="TitleTextBox" 
+                                                 Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
+                                                 MinWidth="30" 
+                                                 VerticalAlignment="Center"
+                                                 FontSize="13"
+                                                 Visibility="Collapsed"
+                                                 KeyDown="TitleTextBox_KeyDown"
+                                                 LostFocus="TitleTextBox_LostFocus"/>
+                                    </StackPanel>
+                                    
+                                    <!-- 右側：閉じるボタン -->
+                                    <Button Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            Command="{Binding DataContext.RemoveTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                            CommandParameter="{Binding}" 
+                                            Margin="5,0,0,0" 
+                                            Width="18" 
+                                            Height="18"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            ToolTip="{Binding Source={x:Static local:LocalizationHelper.Instance}, Path=MainWindow_CloseTab}">
+                                        <Button.Visibility>
+                                            <MultiBinding Converter="{StaticResource OuterTabCloseButtonVisibilityConverter}">
+                                                <Binding Path="IsGenerating"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=TabItem}" Path="IsSelected"/>
+                                            </MultiBinding>
+                                        </Button.Visibility>
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="ButtonBorder" 
+                                                        Background="Transparent" 
+                                                        CornerRadius="9"
+                                                        Width="18" 
+                                                        Height="18">
+                                                    <Path x:Name="ClosePath"
+                                                          Data="M1,1 L9,9 M9,1 L1,9" 
+                                                          Stroke="#999999" 
+                                                          StrokeThickness="1.2"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#E81123"/>
+                                                        <Setter TargetName="ClosePath" Property="Stroke" Value="White"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#C50E1F"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
             <TabControl.Template>
                 <ControlTemplate TargetType="TabControl">
                     <Grid>
@@ -1964,12 +1961,17 @@
                                 </Button.Template>
                             </Button>
                         </StackPanel>
-                        <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Grid.Row="1" Margin="0"/>
                     </Grid>
                 </ControlTemplate>
             </TabControl.Template>
         </TabControl>
-        
+
+        <ContentControl x:Name="OuterTabContentHost"
+                        Content="{Binding SelectedTab}"
+                        ContentTemplate="{StaticResource OuterTabContentTemplate}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+
         <!-- Bulk Import オーバーレイ -->
         <Grid Visibility="{Binding IsBulkImporting, Converter={StaticResource BooleanToVisibilityConverter}}"
               Background="#80000000" Panel.ZIndex="1000">
