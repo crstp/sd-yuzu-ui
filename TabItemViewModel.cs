@@ -526,6 +526,14 @@ namespace SD.Yuzu
             set { _isContentReady = value; OnPropertyChanged(nameof(IsContentReady)); }
         }
 
+        // 外側タブの画像読み込み状態を示すフラグ（保存対象外）
+        private bool _hasLoadedImages = false;
+        public bool HasLoadedImages
+        {
+            get => _hasLoadedImages;
+            set { _hasLoadedImages = value; OnPropertyChanged(nameof(HasLoadedImages)); }
+        }
+
         // Steps変更機能関連のプロパティ
         private long _bulkStepsValue = 8;
         public long BulkStepsValue
@@ -823,6 +831,9 @@ namespace SD.Yuzu
                 EnableRandomResolution = dto.EnableRandomResolution,
                 GenerateButtonText = "Generate" // 復元時は常に"Generate"に設定
             };
+
+            // 画像読み込みフラグは復元後に初期化
+            vm.HasLoadedImages = false;
             
             // 復元フラグを無効にして、以降は通常動作にする
             vm._isRestoring = false;

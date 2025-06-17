@@ -1511,7 +1511,10 @@ namespace SD.Yuzu
                         vm.SelectedTab.SelectedInnerTab.IsContentReady = false;
                     }
                     
-                    LoadImagesForTab(vm.SelectedTab);
+                    if (!vm.SelectedTab.HasLoadedImages)
+                    {
+                        LoadImagesForTab(vm.SelectedTab);
+                    }
                     
                     // 内側タブの変更も監視するためにイベントハンドラーを設定
                     vm.SelectedTab.PropertyChanged -= OuterTab_PropertyChanged;
@@ -1592,6 +1595,9 @@ namespace SD.Yuzu
             {
                 LoadImagesForInnerTab(innerTab);
             }
+
+            // 画像を読み込んだことを記録
+            tab.HasLoadedImages = true;
         }
 
         private void LoadImagesForInnerTab(TabItemViewModel innerTab)
