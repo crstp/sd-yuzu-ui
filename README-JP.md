@@ -18,7 +18,7 @@ YuzuUIはStable Diffusion WebUIのAPIを利用したクライアントアプリ�
 
 ## 使い方
 - クライアントアプリなので、先にWebUIを起動しておく必要があります
-- WebUIのAPI設定で、APIを有効にしておく必要があります
+- WebUIのAPI設定でAPIを有効にしておく必要があります
     - COMMANDLINE_ARGSに`--api`を追加することで有効にできます
     - [設定例](https://gist.github.com/crstp/2976412d94ce19145da4b8cbba11d250#file-webui-user-bat-L6)
     - WebUIのブラウザ自動起動は設定画面の"Automatically open webui in browser on startup"をDisableにすれば切れます
@@ -88,8 +88,8 @@ YuzuUIはStable Diffusion WebUIのAPIを利用したクライアントアプリ�
 - 配布バイナリは単体て実行できるよう.Netのライブラリ入りの実行ファイルにしているのでサイズが巨大になっています
 
 ## ライセンス
-LICENSEを参照して下さい。フィッシングやマルウェアが流行しているので実行ファイル再配布は禁止してあります。このGithubページ以外で配布することはありません
+LICENSEを参照して下さい。フィッシングやマルウェアが流行しているので実行ファイル再配布は禁止してあります。このGithubページ以外で配布していません
 
 ## 既知の問題
-- 外側タブを何度も移動するとメモリ使用量が増える。再起動で直ります
+- 実装の問題で外側タブを何度も移動するとメモリ使用量が増えます。再起動で直ります
 - 稀にテキストボックスのカーソルが飛ぶ。再現できたら直します
