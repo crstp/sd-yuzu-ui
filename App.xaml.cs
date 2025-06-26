@@ -24,7 +24,7 @@ namespace SD.Yuzu
             // 実行ファイルのフルパスを取得してMutex名として使用
             string exePath = Environment.ProcessPath ?? Assembly.GetExecutingAssembly().Location;
             // パス区切り文字をアンダースコアに置換してMutex名として有効にする
-            return "SDYuzu_" + exePath.Replace('\\', '_').Replace(':', '_').Replace('/', '_');
+            return "YuzuUI_" + exePath.Replace('\\', '_').Replace(':', '_').Replace('/', '_');
         }
 
         // Win32 API for window manipulation

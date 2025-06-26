@@ -9,6 +9,9 @@
     <UseAppHost>true</UseAppHost>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Version>1.1.0</Version>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <AssemblyName>YuzuUI</AssemblyName>
+    <RootNamespace>SD.Yuzu</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

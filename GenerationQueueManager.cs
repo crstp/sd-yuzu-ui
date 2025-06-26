@@ -539,7 +539,7 @@ namespace SD.Yuzu
             {
                 var exePath = Environment.ProcessPath;
                 var dir = System.IO.Path.GetDirectoryName(exePath) ?? ".";
-                string legacyOutputDir = System.IO.Path.Combine(dir, "image_cache");
+                string legacyOutputDir = System.IO.Path.Combine(dir, "image_db");
                 System.IO.Directory.CreateDirectory(legacyOutputDir);
 
                 var imagePaths = new System.Collections.ObjectModel.ObservableCollection<string>();

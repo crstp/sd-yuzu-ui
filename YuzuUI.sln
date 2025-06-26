@@ -2,9 +2,7 @@
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36121.58
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SD.Yuzu", "SD.Yuzu.csproj", "{1B7A1F70-DB7C-48D1-AFDF-A826E61D5CFF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SD.Yuzu.Tests", "Tests\SD.Yuzu.Tests.csproj", "{2B9C5C41-4395-4D9D-8DD3-ADD123456789}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuzuUI", "YuzuUI.csproj", "{1B7A1F70-DB7C-48D1-AFDF-A826E61D5CFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

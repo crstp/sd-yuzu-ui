@@ -481,8 +481,8 @@ namespace SD.Yuzu
         {
             var exePath = Environment.ProcessPath;
             var dir = Path.GetDirectoryName(exePath) ?? ".";
-            var imageCacheDir = Path.Combine(dir, "image_cache");
-            Directory.CreateDirectory(imageCacheDir); // image_cacheディレクトリが存在しない場合は作成
+            var imageCacheDir = Path.Combine(dir, "image_db");
+Directory.CreateDirectory(imageCacheDir); // image_dbディレクトリが存在しない場合は作成
             return imageCacheDir;
         }
 
@@ -6798,7 +6798,7 @@ namespace SD.Yuzu
             try
             {
                 // GitHubページをデフォルトブラウザで開く
-                var url = "https://github.com/crstp/sd-yuzu/";
+                var url = "https://github.com/crstp/sd-yuzu-ui/";
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = url,
