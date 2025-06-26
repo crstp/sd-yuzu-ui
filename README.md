@@ -47,7 +47,7 @@ Download the latest zip file from the [Releases page](https://github.com/crstp/s
 - **Auto-completion**
   - Works with standard Danbooru tags plus extras:
     - Ignores spaces, so "from behind" matches "frombehi".
-    - Initials match: "arms behind back" → "abb". You may get lots of hits, but they're sorted by usage frequency.
+    - Initials match: "abb" → "arms behind back". You may get lots of hits, but they're sorted by usage frequency.
 - **Panel collapse & gallery view**
   - `Ctrl + L` toggles the left panel.
   - `Ctrl + P` switches to a full-screen gallery.
