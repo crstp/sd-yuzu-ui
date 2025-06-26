@@ -432,7 +432,9 @@ namespace SD.Yuzu
                                     if (IsCurrentlyActiveTab(item.Tab))
                                     {
                                         item.Tab.ProgressValue = progressData.Progress;
-                                        item.Tab.EtaText = $"{progressData.EtaRelative:F1} sec";
+                                        // EtaRelativeが0未満の場合は0とする
+                                        var etaSeconds = Math.Max(0, progressData.EtaRelative);
+                                        item.Tab.EtaText = $"{etaSeconds:F1} sec";
                                     }
                                     else
                                     {

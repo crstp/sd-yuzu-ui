@@ -1,4 +1,4 @@
-# SD-Yuzu
+# YuzuUI
 
 <div align="center">
     <img src="yuzu.png" alt="Logo" width="300"/>
@@ -7,7 +7,7 @@
 
 ## 概要
 
-SD-YuzuはStable Diffusion WebUIのAPIを利用したクライアントアプリです。WebUIの以下のような問題を解消するために作りました
+YuzuUIはStable Diffusion WebUIのAPIを利用したクライアントアプリです。WebUIの以下のような問題を解消するために作りました
 
 - 全体的に動作が遅い
 - 大量にタブを開くとメモリ消費量が爆発する
@@ -90,3 +90,6 @@ SD-YuzuはStable Diffusion WebUIのAPIを利用したクライアントアプリ
 ## ライセンス
 LICENSEを参照して下さい。フィッシングやマルウェアが流行しているので実行ファイル再配布は禁止してあります。このGithubページ以外で配布することはありません
 
+## 既知の問題
+- 外側タブを何度も移動するとメモリ使用量が増える。再起動で直ります
+- 稀にテキストボックスのカーソルが飛ぶ。再現できたら直します
