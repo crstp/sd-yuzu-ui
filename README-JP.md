@@ -33,6 +33,7 @@ YuzuUIはStable Diffusion WebUIのAPIを利用したクライアントアプリ�
     - [設定例](https://gist.github.com/crstp/2976412d94ce19145da4b8cbba11d250#file-webui-user-bat-L6)
     - WebUIのブラウザ自動起動は設定画面の"Automatically open webui in browser on startup"をDisableにすれば切れます
 - WebUIの画像保存形式がwebpなのを前提に作ってあります。jpgやpngでも動く気はしますが、パフォーマンスが悪かったり上手く動かないかもしれません
+- Ctrl+Tで最後に生成した設定で新しいタブを開くかCtrl+Rで現在のタブの設定を複製してタブを開くのが基本になります
 
 ## 機能
 

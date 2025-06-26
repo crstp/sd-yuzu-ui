@@ -34,6 +34,7 @@ Download the latest zip file from the [Releases page](https://github.com/crstp/s
    - [Example config](https://gist.github.com/crstp/2976412d94ce19145da4b8cbba11d250#file-webui-user-bat-L6)
    - You can stop the browser from auto-launching via the WebUI setting "Automatically open webui in browser on startup".
 3. The app assumes images are saved as `.webp`. JPG or PNG might work but could be slower or break things.
+4. Use `Ctrl + T` to open a new tab with the last used settings, or `Ctrl + R` to duplicate the current tab's settings.
 
 ## Features
 
