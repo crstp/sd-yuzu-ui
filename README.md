@@ -17,6 +17,9 @@ YuzuUI is a desktop client for Stable Diffusion WebUI. I built it to fix some of
 
 I'm open-sourcing because I already built it, but expect a few missing features here and there.
 
+## Installation
+Download the latest zip file from the [Releases page](https://github.com/crstp/sd-yuzu-ui/releases). There is no installer. But it will create settings and image db under the current directory, so extract it to a separate directory.
+
 ## Getting Started
 
 1. Start Stable Diffusion WebUI first — YuzuUI is just a frontend and requires WebUI backend.
