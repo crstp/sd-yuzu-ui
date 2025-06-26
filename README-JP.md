@@ -4,6 +4,12 @@
     <img src="yuzu.png" alt="Logo" width="300"/>
 </div>
 
+## スクリーンショット
+
+<div align="left">
+    <img src="assets/jp_screenshot1.jpg" alt="Logo"/>
+</div>
+
 
 ## 概要
 

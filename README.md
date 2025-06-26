@@ -6,6 +6,13 @@
 
 # 日本語版はこちら: [README-JP.md](README-JP.md)
 
+## Screenshot
+
+<div align="left">
+    <img src="assets/en_screenshot1.jpg" alt="Logo"/>
+</div>
+
+
 ## Overview
 
 YuzuUI is a desktop client for Stable Diffusion WebUI. I built it to fix some of the pain points I ran into with the default browser UI:
