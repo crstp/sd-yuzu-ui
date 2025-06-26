@@ -10,7 +10,7 @@ namespace SD.Yuzu
 {
     public class VersionCheckManager
     {
-        private const string VERSION_URL = "https://gist.githubusercontent.com/crstp/52d30c26bd33e795bc2d5b319c648852/raw/87206628fe240704b383a7a0b43a3667c4769576/gistfile1.txt";
+        private const string VERSION_URL = "https://raw.githubusercontent.com/crstp/sd-yuzu-ui/refs/heads/main/SD.Yuzu.csproj";
         private const int CHECK_DELAY_SECONDS = 5;
         
         private static readonly HttpClient _httpClient = new HttpClient();
